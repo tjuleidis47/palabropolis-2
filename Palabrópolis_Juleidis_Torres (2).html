@@ -1,0 +1,1118 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Palabrópolis – Secuencias Narrativas</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400&family=Crimson+Pro:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Space+Mono:wght@400;700&display=swap');
+
+:root{--gold:#c9a227;--gold2:#f0d060;--cream:#faf6ed;--ink:#0c0906;}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{font-family:'Crimson Pro',Georgia,serif;background:var(--ink);color:var(--cream);min-height:100vh;overflow-x:hidden;position:relative}
+
+/* ─── Ambient ─── */
+.ambient{position:fixed;inset:0;pointer-events:none;z-index:0;overflow:hidden}
+.ambient span{position:absolute;font-size:1.4rem;opacity:.07;animation:floatA linear infinite}
+@keyframes floatA{0%{transform:translateY(110vh) rotate(0deg);opacity:0}10%{opacity:.07}90%{opacity:.07}100%{transform:translateY(-10vh) rotate(360deg);opacity:0}}
+
+/* ─── Screens ─── */
+.screen{display:none;position:relative;z-index:1;min-height:100vh}
+.screen.active{display:flex;flex-direction:column}
+
+/* ─────────────────────────────────────────
+   PANTALLA 0 — REGISTRO
+───────────────────────────────────────── */
+#screen-register{
+  background:radial-gradient(ellipse at 50% 0%,#1a1000 0%,var(--ink) 70%);
+  align-items:center;justify-content:center;padding:2rem 1.5rem;
+}
+.register-box{
+  max-width:520px;width:100%;
+  background:rgba(255,255,255,.03);
+  border:1px solid rgba(255,255,255,.08);
+  border-radius:24px;
+  padding:2.8rem 2.5rem;
+  text-align:center;
+  backdrop-filter:blur(8px);
+}
+.register-logo{
+  font-family:'Playfair Display',serif;
+  font-size:clamp(2.8rem,8vw,5rem);
+  font-weight:900;
+  background:linear-gradient(135deg,#c9a227,#f0d060 40%,#c9a227 70%,#8a6800);
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+  line-height:1;margin-bottom:.3rem;
+}
+.register-sub{font-family:'Space Mono',monospace;font-size:.65rem;letter-spacing:.25em;color:#8a7a55;text-transform:uppercase;margin-bottom:.5rem}
+.register-creator{font-size:.92rem;font-style:italic;color:#c9a227;margin-bottom:.4rem;opacity:.85}
+.register-desc{font-size:.95rem;font-style:italic;color:#a89060;margin-bottom:2rem;line-height:1.5}
+.register-divider{width:60px;height:1px;background:linear-gradient(90deg,transparent,var(--gold),transparent);margin:.8rem auto 1.8rem}
+
+.input-label{font-family:'Space Mono',monospace;font-size:.68rem;letter-spacing:.18em;text-transform:uppercase;color:#8a7a55;margin-bottom:.5rem;display:block;text-align:left}
+.name-input{
+  width:100%;padding:.9rem 1.2rem;
+  background:rgba(255,255,255,.05);
+  border:1px solid rgba(255,255,255,.12);
+  border-radius:12px;
+  color:var(--cream);
+  font-family:'Crimson Pro',serif;font-size:1.1rem;
+  margin-bottom:1.8rem;
+  transition:border-color .2s,box-shadow .2s;
+  outline:none;
+}
+.name-input:focus{border-color:var(--gold);box-shadow:0 0 0 3px rgba(201,162,39,.15)}
+.name-input::placeholder{color:rgba(250,246,237,.3)}
+
+/* Avatar selector */
+.avatar-label{font-family:'Space Mono',monospace;font-size:.68rem;letter-spacing:.18em;text-transform:uppercase;color:#8a7a55;margin-bottom:1rem;display:block;text-align:left}
+.avatar-row{display:flex;gap:1.2rem;justify-content:center;margin-bottom:2.2rem}
+.avatar-option{
+  cursor:pointer;
+  border-radius:20px;
+  padding:1.2rem 1.8rem;
+  border:2px solid rgba(255,255,255,.1);
+  background:rgba(255,255,255,.04);
+  transition:all .25s;
+  display:flex;flex-direction:column;align-items:center;gap:.6rem;
+  flex:1;max-width:180px;
+}
+.avatar-option:hover{border-color:rgba(201,162,39,.5);background:rgba(201,162,39,.06)}
+.avatar-option.selected{border-color:var(--gold);background:rgba(201,162,39,.12);box-shadow:0 0 20px rgba(201,162,39,.2)}
+.avatar-svg{font-size:4rem;line-height:1;filter:drop-shadow(0 2px 8px rgba(0,0,0,.4))}
+.avatar-name{font-family:'Playfair Display',serif;font-size:.95rem;font-weight:700;color:var(--cream)}
+
+.btn-enter{
+  width:100%;padding:1.1rem;border-radius:14px;border:none;
+  background:linear-gradient(135deg,#8a6800,#c9a227,#f0d060,#c9a227);
+  color:#0c0906;font-family:'Playfair Display',serif;font-size:1.2rem;font-weight:900;
+  cursor:pointer;letter-spacing:.05em;
+  transition:transform .2s,filter .2s,opacity .2s;
+  opacity:.5;pointer-events:none;
+}
+.btn-enter.ready{opacity:1;pointer-events:all}
+.btn-enter.ready:hover{transform:scale(1.02);filter:brightness(1.1)}
+
+/* ─────────────────────────────────────────
+   PANTALLA 1 — INICIO / MUNDOS
+───────────────────────────────────────── */
+#screen-home{
+  background:radial-gradient(ellipse at 50% 0%,#1f1500,var(--ink) 70%);
+  align-items:center;padding:2.5rem 1.5rem 4rem;
+}
+.home-topbar{
+  width:100%;max-width:960px;
+  display:flex;align-items:center;justify-content:space-between;
+  margin-bottom:2rem;gap:1rem;flex-wrap:wrap;
+}
+.player-pill{
+  display:flex;align-items:center;gap:.7rem;
+  background:rgba(255,255,255,.05);
+  border:1px solid rgba(255,255,255,.1);
+  border-radius:40px;padding:.5rem 1.1rem .5rem .6rem;
+}
+.player-avatar-sm{font-size:1.8rem;line-height:1}
+.player-name-sm{font-family:'Playfair Display',serif;font-size:1rem;font-weight:700;color:var(--gold)}
+
+.home-header{text-align:center;margin-bottom:3rem;width:100%;max-width:960px}
+.home-title{
+  font-family:'Playfair Display',serif;
+  font-size:clamp(3rem,8vw,6rem);
+  font-weight:900;letter-spacing:-.02em;line-height:1;
+  background:linear-gradient(135deg,#c9a227,#f0d060 40%,#c9a227 70%,#8a6800);
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+  margin-bottom:.4rem;
+}
+.home-subtitle{font-family:'Space Mono',monospace;font-size:.72rem;letter-spacing:.22em;color:#8a7a55;text-transform:uppercase;margin-bottom:.6rem}
+.home-focus{
+  display:inline-block;
+  font-family:'Space Mono',monospace;font-size:.7rem;letter-spacing:.18em;text-transform:uppercase;
+  color:#c9a227;background:rgba(201,162,39,.1);border:1px solid rgba(201,162,39,.25);
+  border-radius:40px;padding:.35rem 1.1rem;margin-bottom:.8rem;
+}
+.home-desc{font-size:1.1rem;font-style:italic;color:#c8b88a;max-width:600px;margin:0 auto;line-height:1.6}
+.home-creator{font-family:'Space Mono',monospace;font-size:.65rem;letter-spacing:.15em;color:#6a5a30;margin-top:.6rem;text-transform:uppercase}
+.home-divider{width:80px;height:2px;background:linear-gradient(90deg,transparent,var(--gold),transparent);margin:1.2rem auto}
+
+/* World cards */
+.worlds-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(270px,1fr));gap:1.4rem;max-width:960px;width:100%}
+.world-card{
+  border-radius:18px;padding:1.8rem;cursor:pointer;position:relative;overflow:hidden;
+  border:1px solid rgba(255,255,255,.06);
+  transition:transform .3s,box-shadow .3s,opacity .3s;
+  backdrop-filter:blur(4px);
+}
+.world-card::before{content:'';position:absolute;inset:0;background:linear-gradient(135deg,rgba(255,255,255,.04),transparent 60%);pointer-events:none}
+.world-card:hover:not(.locked){transform:translateY(-6px) scale(1.01)}
+.world-card.locked{opacity:.45;cursor:not-allowed}
+.lock-badge{position:absolute;top:1rem;right:1rem;font-size:1.2rem;opacity:.7}
+.world-card[data-world="1"]{background:linear-gradient(145deg,#0d1b2a,#162537);box-shadow:0 8px 40px rgba(201,162,39,.12)}
+.world-card[data-world="1"]:hover:not(.locked){box-shadow:0 16px 60px rgba(201,162,39,.28)}
+.world-card[data-world="2"]{background:linear-gradient(145deg,#1a0a2e,#24103e);box-shadow:0 8px 40px rgba(150,80,220,.12)}
+.world-card[data-world="2"]:hover:not(.locked){box-shadow:0 16px 60px rgba(150,80,220,.28)}
+.world-card[data-world="3"]{background:linear-gradient(145deg,#041f3a,#082d50);box-shadow:0 8px 40px rgba(61,214,214,.12)}
+.world-card[data-world="3"]:hover:not(.locked){box-shadow:0 16px 60px rgba(61,214,214,.28)}
+.world-card[data-world="4"]{background:linear-gradient(145deg,#1c0a0a,#2e1010);box-shadow:0 8px 40px rgba(220,80,80,.12)}
+.world-card[data-world="4"]:hover:not(.locked){box-shadow:0 16px 60px rgba(220,80,80,.28)}
+.world-card[data-world="5"]{background:linear-gradient(145deg,#0a1c0a,#102e10);box-shadow:0 8px 40px rgba(80,200,100,.12)}
+.world-card[data-world="5"]:hover:not(.locked){box-shadow:0 16px 60px rgba(80,200,100,.28)}
+.world-card[data-world="6"]{background:linear-gradient(145deg,#1a1200,#2a1e00);box-shadow:0 8px 40px rgba(240,180,0,.12)}
+.world-card[data-world="6"]:hover:not(.locked){box-shadow:0 16px 60px rgba(240,180,0,.28)}
+
+.world-icon{font-size:3rem;margin-bottom:.9rem;display:block}
+.world-name{font-family:'Playfair Display',serif;font-size:1.35rem;font-weight:700;margin-bottom:.3rem}
+.world-card[data-world="1"] .world-name{color:#c9a227}
+.world-card[data-world="2"] .world-name{color:#b080ee}
+.world-card[data-world="3"] .world-name{color:#3dd6d6}
+.world-card[data-world="4"] .world-name{color:#ee7070}
+.world-card[data-world="5"] .world-name{color:#60d880}
+.world-card[data-world="6"] .world-name{color:#f0c830}
+.world-difficulty{font-family:'Space Mono',monospace;font-size:.65rem;letter-spacing:.12em;text-transform:uppercase;margin-bottom:.5rem}
+.world-theme{font-size:.85rem;opacity:.68;line-height:1.45;font-style:italic;color:#d4c9a8}
+.world-meta{margin-top:.9rem;font-family:'Space Mono',monospace;font-size:.65rem;letter-spacing:.1em;opacity:.45;text-transform:uppercase;display:flex;align-items:center;gap:.5rem}
+.stars{color:#c9a227;font-size:.8rem}
+.req-score{font-family:'Space Mono',monospace;font-size:.6rem;color:#a89060;margin-top:.4rem}
+
+/* Sound btn */
+.sound-btn{position:fixed;top:1.2rem;right:1.5rem;z-index:100;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12);color:var(--cream);border-radius:50%;width:44px;height:44px;font-size:1.3rem;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:background .2s;backdrop-filter:blur(6px)}
+.sound-btn:hover{background:rgba(255,255,255,.13)}
+
+/* ─────────────────────────────────────────
+   PANTALLA 2 — LECCIÓN
+───────────────────────────────────────── */
+#screen-lesson{background:#100d08;padding:2rem 1.5rem;align-items:center}
+.lesson-inner{max-width:700px;width:100%}
+.lesson-header{text-align:center;margin-bottom:2rem}
+.lesson-icon{font-size:4rem;margin-bottom:.8rem;display:block}
+.lesson-world-name{font-family:'Playfair Display',serif;font-size:2rem;font-weight:700;margin-bottom:.3rem}
+.lesson-diff-badge{font-family:'Space Mono',monospace;font-size:.65rem;letter-spacing:.18em;text-transform:uppercase;border-radius:30px;padding:.3rem .9rem;display:inline-block;margin-bottom:.5rem}
+.lesson-desc{font-size:1.1rem;line-height:1.7;color:#d4c9a8;margin-bottom:1.8rem;font-style:italic;text-align:center}
+.key-block{border-radius:14px;padding:1.3rem 1.6rem;margin-bottom:1.8rem;border-left:4px solid var(--gold);background:rgba(201,162,39,.07)}
+.key-block-title{font-family:'Space Mono',monospace;font-size:.65rem;letter-spacing:.2em;text-transform:uppercase;color:var(--gold);margin-bottom:.6rem}
+.key-block p{font-size:.98rem;line-height:1.65;color:#e0d5b8}
+.concepts-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:.9rem;margin-bottom:2.2rem}
+.concept-card{border-radius:12px;padding:1.1rem;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);text-align:center}
+.concept-emoji{font-size:1.7rem;margin-bottom:.5rem;display:block}
+.concept-name{font-family:'Playfair Display',serif;font-size:.95rem;font-weight:700;margin-bottom:.25rem}
+.concept-def{font-size:.82rem;opacity:.7;line-height:1.4}
+.btn-play{display:block;width:100%;padding:1.1rem;border-radius:14px;border:none;font-family:'Playfair Display',serif;font-size:1.2rem;font-weight:700;cursor:pointer;letter-spacing:.04em;transition:transform .2s,filter .2s}
+.btn-play:hover{transform:scale(1.02);filter:brightness(1.1)}
+.btn-back{display:inline-flex;align-items:center;gap:.4rem;background:none;border:none;color:#8a7a55;font-family:'Crimson Pro',serif;font-size:1rem;cursor:pointer;margin-bottom:1.5rem;padding:.3rem 0;transition:color .2s}
+.btn-back:hover{color:var(--gold)}
+
+/* ─────────────────────────────────────────
+   PANTALLA 3 — JUEGO
+───────────────────────────────────────── */
+#screen-game{padding:1.2rem 1.5rem 2rem;align-items:center}
+.game-inner{max-width:740px;width:100%}
+
+.hud{display:flex;align-items:center;gap:.7rem;margin-bottom:1.2rem;flex-wrap:wrap}
+.hud-player{display:flex;align-items:center;gap:.5rem;flex:1}
+.hud-avatar{font-size:1.6rem;line-height:1}
+.hud-world-name{font-family:'Playfair Display',serif;font-size:1rem;font-weight:700}
+.hud-score{font-family:'Space Mono',monospace;font-size:.88rem;color:var(--gold)}
+.hud-lives{font-size:1rem;letter-spacing:.08em}
+.hud-btn{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);color:var(--cream);border-radius:8px;padding:.3rem .75rem;font-size:.82rem;cursor:pointer;transition:background .2s;font-family:'Crimson Pro',serif}
+.hud-btn:hover{background:rgba(255,255,255,.12)}
+
+.progress-wrap{height:6px;background:rgba(255,255,255,.07);border-radius:10px;margin-bottom:.4rem;overflow:hidden}
+.progress-bar{height:100%;border-radius:10px;transition:width .5s ease}
+.progress-label{font-family:'Space Mono',monospace;font-size:.65rem;opacity:.4;text-align:right;margin-bottom:1rem}
+
+.timer-wrap{height:5px;background:rgba(255,255,255,.07);border-radius:10px;margin-bottom:1.4rem;overflow:hidden}
+.timer-bar{height:100%;border-radius:10px;transition:width .9s linear,background .5s;background:#3dd6d6}
+.timer-bar.warning{background:#f0a030}
+.timer-bar.danger{background:#e03030}
+
+/* Bonus combo */
+.combo-badge{
+  display:inline-block;
+  font-family:'Space Mono',monospace;font-size:.7rem;letter-spacing:.1em;
+  background:rgba(201,162,39,.15);border:1px solid rgba(201,162,39,.3);
+  border-radius:30px;padding:.25rem .8rem;color:var(--gold);
+  margin-bottom:.8rem;transition:all .3s;
+}
+.combo-badge.hot{background:rgba(240,80,40,.2);border-color:rgba(240,80,40,.5);color:#ff9060}
+
+.level-card{border-radius:18px;padding:1.8rem;margin-bottom:1.3rem;border:1px solid rgba(255,255,255,.07);background:rgba(255,255,255,.03)}
+.level-type-badge{font-family:'Space Mono',monospace;font-size:.62rem;letter-spacing:.18em;text-transform:uppercase;border-radius:30px;padding:.25rem .8rem;display:inline-block;margin-bottom:.8rem}
+.level-mission{font-family:'Space Mono',monospace;font-size:.65rem;letter-spacing:.18em;text-transform:uppercase;opacity:.45;margin-bottom:.8rem}
+.level-fragment{font-size:1rem;line-height:1.75;color:#e0d5b8;margin-bottom:1rem;font-style:italic;border-left:3px solid rgba(201,162,39,.3);padding-left:1rem}
+.level-hint{font-size:.85rem;color:#a89060;margin-bottom:.9rem;display:flex;align-items:flex-start;gap:.4rem}
+.level-hint::before{content:'💡';font-size:.85rem;flex-shrink:0}
+.level-question{font-family:'Playfair Display',serif;font-size:1.18rem;font-weight:700;line-height:1.45;color:var(--cream)}
+
+.options-grid{display:grid;gap:.8rem;margin-bottom:1rem}
+.option-btn{text-align:left;padding:.95rem 1.2rem;border-radius:12px;border:1px solid rgba(255,255,255,.1);background:rgba(255,255,255,.04);color:var(--cream);font-family:'Crimson Pro',serif;font-size:1rem;cursor:pointer;transition:background .2s,border-color .2s,transform .15s;line-height:1.4}
+.option-btn:hover:not(:disabled){background:rgba(255,255,255,.09);border-color:rgba(255,255,255,.22);transform:translateX(4px)}
+.option-btn.correct{background:rgba(50,200,100,.18);border-color:#32c864;color:#7ef7a8}
+.option-btn.wrong{background:rgba(220,50,50,.18);border-color:#e04040;color:#f99}
+.option-btn:disabled{cursor:default}
+
+/* ─────────────────────────────────────────
+   MODAL
+───────────────────────────────────────── */
+.modal-overlay{display:none;position:fixed;inset:0;z-index:200;background:rgba(0,0,0,.7);backdrop-filter:blur(6px);align-items:center;justify-content:center;padding:1.5rem}
+.modal-overlay.active{display:flex}
+.modal-box{background:#18140d;border-radius:22px;padding:2.5rem 2rem;max-width:520px;width:100%;border:1px solid rgba(255,255,255,.1);text-align:center;animation:modalIn .3s cubic-bezier(.34,1.56,.64,1)}
+@keyframes modalIn{from{transform:scale(.8) translateY(20px);opacity:0}to{transform:scale(1) translateY(0);opacity:1}}
+.modal-icon{font-size:3.5rem;margin-bottom:.8rem;display:block}
+.modal-title{font-family:'Playfair Display',serif;font-size:1.7rem;font-weight:700;margin-bottom:.6rem}
+.modal-title.correct{color:#32c864}
+.modal-title.wrong{color:#e04040}
+.modal-pts{font-family:'Space Mono',monospace;font-size:1.1rem;color:var(--gold);margin-bottom:.5rem}
+.modal-explanation{font-size:1rem;line-height:1.65;color:#d4c9a8;margin-bottom:.9rem}
+.modal-remember{font-size:.88rem;font-style:italic;color:var(--gold);margin-bottom:1.6rem;padding:.75rem 1.1rem;background:rgba(201,162,39,.08);border-radius:10px}
+.modal-btn{padding:.9rem 2.5rem;border-radius:12px;border:none;font-family:'Playfair Display',serif;font-size:1.1rem;font-weight:700;cursor:pointer;transition:transform .2s,filter .2s}
+.modal-btn:hover{transform:scale(1.04);filter:brightness(1.1)}
+.modal-btn.correct-btn{background:linear-gradient(135deg,#1a8040,#32c864);color:#fff}
+.modal-btn.wrong-btn{background:linear-gradient(135deg,#8a2020,#e04040);color:#fff}
+
+/* World unlock modal */
+.unlock-box{background:linear-gradient(145deg,#1a1000,#2a1e00);border-color:rgba(201,162,39,.3)}
+.unlock-world-badge{font-size:4rem;margin-bottom:.5rem;display:block;animation:bounce .6s ease infinite alternate}
+@keyframes bounce{from{transform:translateY(0)}to{transform:translateY(-10px)}}
+
+/* ─────────────────────────────────────────
+   PANTALLA FIN
+───────────────────────────────────────── */
+#screen-end{align-items:center;justify-content:center;background:radial-gradient(ellipse at 50% 50%,#1f1500,var(--ink) 80%);text-align:center;padding:2rem}
+.end-inner{max-width:560px}
+.end-avatar{font-size:4rem;margin-bottom:.5rem}
+.end-player{font-family:'Playfair Display',serif;font-size:1.4rem;color:var(--gold);margin-bottom:.3rem}
+.end-trophy{font-size:4.5rem;margin-bottom:.8rem}
+.end-title{font-family:'Playfair Display',serif;font-size:2.5rem;font-weight:900;background:linear-gradient(135deg,#c9a227,#f0d060,#c9a227);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;margin-bottom:.4rem}
+.end-score{font-family:'Space Mono',monospace;font-size:2.8rem;color:var(--gold);margin:.8rem 0 .2rem}
+.end-world{font-family:'Space Mono',monospace;font-size:.7rem;color:#8a7a55;letter-spacing:.15em;text-transform:uppercase;margin-bottom:.4rem}
+.end-message{font-size:1.1rem;color:#c8b88a;font-style:italic;margin-bottom:.8rem;line-height:1.6}
+.end-unlock-hint{font-family:'Space Mono',monospace;font-size:.7rem;color:var(--gold);letter-spacing:.1em;margin-bottom:2rem;padding:.5rem 1rem;background:rgba(201,162,39,.08);border-radius:8px;display:inline-block}
+.end-btns{display:flex;gap:1rem;justify-content:center;flex-wrap:wrap}
+.end-btn{padding:.9rem 2.2rem;border-radius:14px;border:none;font-family:'Playfair Display',serif;font-size:1.1rem;font-weight:700;cursor:pointer;transition:transform .2s,filter .2s}
+.end-btn:hover{transform:scale(1.04);filter:brightness(1.1)}
+.end-btn.primary{background:linear-gradient(135deg,#8a6800,#c9a227,#f0d060,#c9a227);color:#0c0906}
+.end-btn.secondary{background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.15);color:var(--cream)}
+
+#confetti-canvas{position:fixed;inset:0;pointer-events:none;z-index:300}
+::-webkit-scrollbar{width:6px}::-webkit-scrollbar-track{background:transparent}::-webkit-scrollbar-thumb{background:rgba(201,162,39,.3);border-radius:3px}
+</style>
+</head>
+<body>
+
+<div class="ambient" id="ambient"></div>
+<canvas id="confetti-canvas"></canvas>
+<button class="sound-btn" id="soundBtn">🔊</button>
+
+<!-- ══════════════════════════════════════
+     PANTALLA 0 — REGISTRO
+══════════════════════════════════════ -->
+<div class="screen active" id="screen-register">
+  <div class="register-box">
+    <div class="register-logo">Palabrópolis</div>
+    <p class="register-sub">Secuencias Narrativas · Aventura Literaria</p>
+    <div class="register-divider"></div>
+    <p class="register-creator">✍️ Creado por <strong>Juleidis Torres</strong></p>
+    <p class="register-desc">Identifica, ordena y comprende las secuencias que dan vida a cada historia.</p>
+
+    <label class="input-label" for="playerNameInput">¿Cómo te llamas, explorador/a?</label>
+    <input class="name-input" id="playerNameInput" type="text" placeholder="Escribe tu nombre aquí..." maxlength="20" autocomplete="off">
+
+    <label class="avatar-label">Elige tu avatar</label>
+    <div class="avatar-row">
+      <div class="avatar-option" id="avatarF" onclick="selectAvatar('f')">
+        <span class="avatar-svg">🧑‍💻</span>
+        <span class="avatar-name">Exploradora</span>
+      </div>
+      <div class="avatar-option" id="avatarM" onclick="selectAvatar('m')">
+        <span class="avatar-svg">🧑‍🚀</span>
+        <span class="avatar-name">Explorador</span>
+      </div>
+    </div>
+
+    <button class="btn-enter" id="btnEnter" onclick="enterGame()">¡Comenzar aventura! →</button>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════
+     PANTALLA 1 — MAPA DE MUNDOS
+══════════════════════════════════════ -->
+<div class="screen" id="screen-home">
+  <div class="home-topbar">
+    <div class="player-pill" id="playerPill">
+      <span class="player-avatar-sm" id="pillAvatar">🧑‍💻</span>
+      <span class="player-name-sm" id="pillName">Jugador</span>
+    </div>
+    <div style="font-family:'Space Mono',monospace;font-size:.7rem;color:#8a7a55">
+      PUNTOS TOTALES: <span id="totalScoreDisplay" style="color:var(--gold)">0</span>
+    </div>
+  </div>
+
+  <div class="home-header">
+    <h1 class="home-title">Palabrópolis</h1>
+    <p class="home-subtitle">Prototipos educativos · del código al aula</p>
+    <div class="home-divider"></div>
+    <span class="home-focus">🗺️ Secuencias Narrativas</span>
+    <p class="home-desc">Seis mundos, dificultad creciente. Domina el orden de los hechos, los conectores, los flashbacks y mucho más.</p>
+    <p class="home-creator">✍️ Creado por Juleidis Torres</p>
+  </div>
+
+  <div class="worlds-grid" id="worldsGrid"></div>
+</div>
+
+<!-- ══════════════════════════════════════
+     PANTALLA 2 — LECCIÓN
+══════════════════════════════════════ -->
+<div class="screen" id="screen-lesson">
+  <div class="lesson-inner">
+    <button class="btn-back" id="lessonBack">← Mapa de Mundos</button>
+    <div class="lesson-header">
+      <span class="lesson-icon" id="lessonIcon"></span>
+      <h2 class="lesson-world-name" id="lessonName"></h2>
+      <span class="lesson-diff-badge" id="lessonDiffBadge"></span>
+    </div>
+    <p class="lesson-desc" id="lessonDesc"></p>
+    <div class="key-block"><div class="key-block-title">📌 Clave didáctica</div><p id="lessonKey"></p></div>
+    <div class="concepts-grid" id="conceptsGrid"></div>
+    <button class="btn-play" id="btnPlay">¡Iniciar misión! →</button>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════
+     PANTALLA 3 — JUEGO
+══════════════════════════════════════ -->
+<div class="screen" id="screen-game">
+  <div class="game-inner">
+    <div class="hud">
+      <div class="hud-player">
+        <span class="hud-avatar" id="hudAvatar">🧑‍💻</span>
+        <span class="hud-world-name" id="hudWorldName"></span>
+      </div>
+      <span class="hud-score" id="hudScore">⭐ 0</span>
+      <span class="hud-lives" id="hudLives">❤️❤️❤️</span>
+      <button class="hud-btn" id="gameHomeBtn">🏠 Mapa</button>
+    </div>
+    <div class="combo-badge" id="comboBadge">🔥 Racha: 0</div>
+    <div class="progress-wrap"><div class="progress-bar" id="progressBar" style="width:0%"></div></div>
+    <div class="progress-label" id="progressLabel"></div>
+    <div class="timer-wrap"><div class="timer-bar" id="timerBar" style="width:100%"></div></div>
+    <div class="level-card">
+      <span class="level-type-badge" id="levelTypeBadge"></span>
+      <div class="level-mission" id="levelMission"></div>
+      <div class="level-fragment" id="levelFragment"></div>
+      <div class="level-hint" id="levelHint"></div>
+      <div class="level-question" id="levelQuestion"></div>
+    </div>
+    <div class="options-grid" id="optionsGrid"></div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════
+     PANTALLA 4 — FIN DE MUNDO
+══════════════════════════════════════ -->
+<div class="screen" id="screen-end">
+  <div class="end-inner">
+    <div class="end-avatar" id="endAvatar">🧑‍💻</div>
+    <div class="end-player" id="endPlayerName"></div>
+    <div class="end-trophy" id="endTrophy">🏆</div>
+    <h2 class="end-title" id="endTitle"></h2>
+    <div class="end-world" id="endWorldLabel"></div>
+    <div class="end-score" id="endScore"></div>
+    <p class="end-message" id="endMessage"></p>
+    <p class="end-unlock-hint" id="endUnlockHint"></p>
+    <div class="end-btns">
+      <button class="end-btn primary" onclick="goHome()">🗺️ Volver al mapa</button>
+      <button class="end-btn secondary" id="retryBtn" onclick="retryWorld()">↺ Reintentar</button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal retroalimentación -->
+<div class="modal-overlay" id="feedbackModal">
+  <div class="modal-box" id="feedbackBox">
+    <span class="modal-icon" id="modalIcon"></span>
+    <h3 class="modal-title" id="modalTitle"></h3>
+    <div class="modal-pts" id="modalPts"></div>
+    <p class="modal-explanation" id="modalExplanation"></p>
+    <p class="modal-remember" id="modalRemember"></p>
+    <button class="modal-btn" id="modalBtn" onclick="modalNext()"></button>
+  </div>
+</div>
+
+<!-- Modal desbloqueo -->
+<div class="modal-overlay" id="unlockModal">
+  <div class="modal-box unlock-box" id="unlockBox">
+    <span class="modal-icon">🔓</span>
+    <span class="unlock-world-badge" id="unlockIcon"></span>
+    <h3 class="modal-title correct" id="unlockTitle"></h3>
+    <p class="modal-explanation" id="unlockDesc"></p>
+    <button class="modal-btn correct-btn" onclick="closeUnlock()">¡Explorar ahora!</button>
+  </div>
+</div>
+
+<script>
+// ══════════════════════════════════════════════════════════
+//  UTILS
+// ══════════════════════════════════════════════════════════
+function shuffle(arr){const a=arr.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;}
+function pickRandom(arr,n){return shuffle(arr).slice(0,Math.min(n,arr.length));}
+function shuffleOptions(q){
+  const indexed=q.options.map((text,i)=>({text,isCorrect:i===q.correct}));
+  const s=shuffle(indexed);
+  return{options:s.map(o=>o.text),correct:s.findIndex(o=>o.isCorrect)};
+}
+
+// ══════════════════════════════════════════════════════════
+//  CONFIGURACIÓN DE DIFICULTAD POR MUNDO
+//  Mundo 1 = Iniciación  (timer 28s, 5 vidas, pts x3)
+//  Mundo 2 = Básico      (timer 24s, 4 vidas, pts x4)
+//  Mundo 3 = Intermedio  (timer 20s, 3 vidas, pts x5)
+//  Mundo 4 = Avanzado    (timer 17s, 3 vidas, pts x6)
+//  Mundo 5 = Experto     (timer 14s, 3 vidas, pts x8)
+//  Mundo 6 = Maestro     (timer 11s, 2 vidas, pts x12)
+// ══════════════════════════════════════════════════════════
+const DIFF=[
+  {label:'⭐ Iniciación',   timer:28,lives:5,mult:3,  color:'#c9a227',req:0},
+  {label:'⭐⭐ Básico',      timer:24,lives:4,mult:4,  color:'#b080ee',req:150},
+  {label:'⭐⭐⭐ Intermedio', timer:20,lives:3,mult:5,  color:'#3dd6d6',req:350},
+  {label:'⭐⭐⭐⭐ Avanzado',  timer:17,lives:3,mult:6,  color:'#ee7070',req:620},
+  {label:'⭐⭐⭐⭐⭐ Experto',  timer:14,lives:3,mult:8,  color:'#60d880',req:950},
+  {label:'👑 Maestro',      timer:11,lives:2,mult:12, color:'#f0c830',req:1400},
+];
+
+// ══════════════════════════════════════════════════════════
+//  BANCO DE PREGUNTAS — 6 mundos × 12 preguntas
+//  TODOS centrados en SECUENCIAS NARRATIVAS
+//  con dificultad creciente
+// ══════════════════════════════════════════════════════════
+const WORLDS=[
+  /* ─── MUNDO 1 — Iniciación ─── */
+  {
+    id:1,icon:'🌅',name:'El Amanecer del Relato',
+    theme:'Secuencia básica: inicio, desarrollo y final',
+    desc:'Aprende a reconocer el orden más simple de una historia: ¿qué ocurre primero, en el medio y al final?',
+    key:'La secuencia narrativa básica sigue el orden: inicio → desarrollo → final. Los hechos ocurren uno después del otro en el tiempo.',
+    concepts:[
+      {emoji:'1️⃣',name:'Primero',def:'El hecho que ocurre antes que todos los demás.'},
+      {emoji:'2️⃣',name:'Después',def:'El hecho que sucede en el medio de la historia.'},
+      {emoji:'3️⃣',name:'Al final',def:'El hecho que cierra y concluye la historia.'},
+      {emoji:'🔗',name:'Conectores',def:'"Primero", "luego", "después", "finalmente" ordenan los hechos.'},
+    ],
+    questions:[
+      {type:'Orden básico',mission:'Ordena la secuencia',fragment:'A) Valentina abrió el regalo. B) Valentina encontró el regalo bajo el árbol. C) Valentina sonrió muy feliz.',hint:'¿Qué ocurrió primero, qué después y qué al final?',question:'¿Cuál es el orden correcto de los hechos?',options:['B – A – C','A – B – C','C – A – B','B – C – A'],correct:0,explanation:'"B" es lo primero (encontró el regalo), luego "A" (lo abrió) y finalmente "C" (sonrió). El orden lógico es B→A→C.',remember:'La secuencia narrativa sigue el orden en que los hechos ocurren en el tiempo.'},
+      {type:'Conector temporal',mission:'Detecta el conector',fragment:'"Primero, Andrés preparó los ingredientes. Luego mezcló la masa. Finalmente, metió el pastel al horno."',hint:'¿Qué palabras indican el orden de los pasos?',question:'¿Cuáles son los conectores temporales en este fragmento?',options:['Primero / Luego / Finalmente','Pero / Sin embargo / Aunque','Como / Porque / Ya que','Sino / Más bien / Por tanto'],correct:0,explanation:'"Primero", "luego" y "finalmente" son conectores temporales: indican el orden exacto en que ocurren los hechos.',remember:'Los conectores temporales organizan los hechos en secuencia: primero, luego, después, finalmente.'},
+      {type:'Hecho inicial',mission:'¿Qué ocurrió primero?',fragment:'"Después de desayunar, Camila fue al colegio. Antes de salir, se cepilló los dientes."',hint:'¿Cuál acción fue la primera en realizarse?',question:'¿Qué hizo Camila primero, según el texto?',options:['Se cepilló los dientes','Desayunó','Fue al colegio','Llegó al salón'],correct:0,explanation:'"Antes de salir, se cepilló los dientes" → esto indica que cepillarse fue lo primero. Luego desayunó y después fue al colegio.',remember:'"Antes de" indica que una acción ocurrió prior a la que se menciona a continuación.'},
+      {type:'Secuencia instruccional',mission:'Ordena los pasos',fragment:'Pasos para lavarse las manos: C) Enjuaga con agua. A) Moja las manos. B) Aplica jabón y frota.',hint:'¿En qué orden lógico se realizan estos pasos?',question:'¿Cuál es el orden correcto?',options:['A – B – C','B – A – C','C – B – A','A – C – B'],correct:0,explanation:'Primero mojas las manos (A), luego aplicas jabón (B) y finalmente enjuagas (C). La secuencia instruccional debe seguirse en orden.',remember:'Las secuencias instruccionales tienen un orden obligatorio que no puede alterarse.'},
+      {type:'Conector al final',mission:'Identifica el cierre',fragment:'"Sara estudió mucho durante la semana. Repasó sus apuntes la noche anterior. Finalmente, obtuvo la mejor nota de su clase."',hint:'¿Qué conector indica el hecho final?',question:'¿Qué palabra indica que "obtener la nota" es el hecho final?',options:['Finalmente','Durante','Anterior','Mucho'],correct:0,explanation:'"Finalmente" es el conector que indica el cierre o resultado final de la secuencia de acciones.',remember:'"Finalmente", "por último" y "al final" señalan el último hecho de una secuencia.'},
+      {type:'Hecho faltante',mission:'Completa la secuencia',fragment:'"Carlos encendió la computadora. ________. Finalmente, envió el correo a su profesora."',hint:'¿Qué acción falta entre encender la computadora y enviar el correo?',question:'¿Qué acción va en el espacio en blanco?',options:['Escribió el mensaje','Apagó la computadora','Salió a caminar','Llamó por teléfono'],correct:0,explanation:'La secuencia lógica es: encender → escribir → enviar. Falta la acción de escribir el mensaje.',remember:'En una secuencia narrativa, cada hecho debe conectar lógicamente con el anterior y el siguiente.'},
+      {type:'Orden cronológico',mission:'¿Qué va primero?',fragment:'"El sol salió brillante. Los pájaros comenzaron a cantar. La ciudad despertó poco a poco."',hint:'¿En qué orden natural ocurren estos hechos?',question:'¿Cuál es el orden cronológico de los hechos?',options:['Sol sale – Pájaros cantan – Ciudad despierta','Ciudad despierta – Sol sale – Pájaros cantan','Pájaros cantan – Ciudad despierta – Sol sale','Sol sale – Ciudad despierta – Pájaros cantan'],correct:0,explanation:'El amanecer sigue este orden natural: primero sale el sol, luego cantan los pájaros y finalmente la ciudad despierta.',remember:'El orden cronológico es el orden natural y lógico en que ocurren los hechos en el tiempo.'},
+      {type:'Antes y después',mission:'Causa y secuencia',fragment:'"Después de que llovió, el arcoíris apareció en el cielo. Antes de llover, el cielo se había nublado."',hint:'¿En qué orden real ocurrieron los tres hechos?',question:'¿Cuál es el orden correcto de los hechos?',options:['Cielo nublado – Lluvia – Arcoíris','Lluvia – Arcoíris – Cielo nublado','Arcoíris – Lluvia – Cielo nublado','Cielo nublado – Arcoíris – Lluvia'],correct:0,explanation:'El cielo se nubló (1), luego llovió (2) y después apareció el arcoíris (3). Los conectores "antes" y "después" nos dan el orden.',remember:'"Antes de" y "después de" son conectores clave para reconstruir el orden cronológico.'},
+      {type:'Secuencia simple',mission:'Identifica el desarrollo',fragment:'"Juan llegó al parque. Jugó con su perro durante una hora. Luego regresó a casa cansado."',hint:'¿Cuál es el hecho del desarrollo (en el medio)?',question:'¿Cuál es el hecho que constituye el DESARROLLO de la historia?',options:['Jugó con su perro durante una hora','Juan llegó al parque','Regresó a casa cansado','El parque estaba lleno de gente'],correct:0,explanation:'El inicio es "llegó al parque", el desarrollo es "jugó con su perro" y el final es "regresó cansado".',remember:'El desarrollo es el conjunto de acciones que ocurren entre el inicio y el final de una historia.'},
+      {type:'Tiempo verbal',mission:'Detecta el orden por verbos',fragment:'"María cantará mañana en el festival. Ayer ensayó durante horas. Hoy duerme para descansar."',hint:'¿Qué tiempo verbal indica cuál hecho ocurrió antes?',question:'¿Cuál hecho ocurrió PRIMERO en el tiempo?',options:['Ensayó durante horas (ayer)','Cantará en el festival (mañana)','Duerme para descansar (hoy)','Llegó al festival'],correct:0,explanation:'"Ayer ensayó" → pasado. "Hoy duerme" → presente. "Mañana cantará" → futuro. El orden temporal es: ensayó → duerme → cantará.',remember:'Los tiempos verbales (pasado, presente, futuro) nos ayudan a reconstruir el orden cronológico.'},
+      {type:'Secuencia diaria',mission:'Ordena la rutina',fragment:'A) Se durmió. B) Cenó con su familia. C) Llegó a casa del trabajo. D) Se bañó.',hint:'¿Cuál es el orden lógico de una rutina vespertina?',question:'¿Cuál es la secuencia más lógica?',options:['C – D – B – A','B – C – D – A','A – C – D – B','D – B – C – A'],correct:0,explanation:'Llegó a casa (C), se bañó (D), cenó (B) y luego se durmió (A). Es la secuencia lógica de una tarde-noche.',remember:'La secuencia narrativa respeta la lógica de los hechos: lo que es causa va antes que el efecto.'},
+      {type:'Conector final',mission:'Identifica el desenlace',fragment:'"El equipo entrenó durante meses. Practicaron sus jugadas una y otra vez. Al final, ganaron el campeonato."',hint:'¿Qué conector marca el cierre de la historia?',question:'¿Cuál es el hecho final de esta secuencia?',options:['Ganaron el campeonato','Entrenaron durante meses','Practicaron sus jugadas','Llegaron al campeonato'],correct:0,explanation:'"Al final" es el conector que marca el cierre. El hecho final es ganar el campeonato como resultado de todo el esfuerzo.',remember:'"Al final" y "finalmente" siempre anuncian el hecho que cierra la secuencia narrativa.'},
+    ]
+  },
+
+  /* ─── MUNDO 2 — Básico ─── */
+  {
+    id:2,icon:'🌿',name:'El Bosque de los Conectores',
+    theme:'Conectores temporales y causales en secuencias',
+    desc:'Los conectores son el hilo que une los hechos. Aprende a identificarlos y a usarlos para ordenar cualquier narración.',
+    key:'Los conectores temporales (antes, después, luego, mientras, cuando) y causales (porque, por eso, ya que) son las herramientas que organizan y explican la secuencia de los hechos.',
+    concepts:[
+      {emoji:'⏰',name:'Conectores temporales',def:'"Antes", "después", "luego", "mientras", "cuando", "entonces".'},
+      {emoji:'🔗',name:'Conectores causales',def:'"Porque", "ya que", "por eso", "por tanto", "debido a".'},
+      {emoji:'↔️',name:'Simultaneidad',def:'"Mientras" y "al mismo tiempo" indican hechos que ocurren juntos.'},
+      {emoji:'📋',name:'Secuencia lógica',def:'Cada hecho se desprende del anterior de forma coherente.'},
+    ],
+    questions:[
+      {type:'Conector causal',mission:'Causa y consecuencia',fragment:'"Julia no estudió para el examen. Por eso, obtuvo una calificación baja."',hint:'¿Cuál es la causa y cuál el efecto?',question:'¿Qué función cumple "por eso" en esta secuencia?',options:['Conecta la causa con su consecuencia','Indica simultaneidad de acciones','Señala el inicio de la historia','Marca el tiempo pasado'],correct:0,explanation:'"Por eso" conecta la causa (no estudiar) con su consecuencia (mala calificación). Es un conector causal-consecutivo.',remember:'"Por eso", "por tanto" y "por lo tanto" conectan una causa con su efecto en la secuencia narrativa.'},
+      {type:'Simultaneidad',mission:'Hechos paralelos',fragment:'"Mientras el cocinero preparaba la sopa, su ayudante cortaba las verduras."',hint:'¿Ocurren los dos hechos al mismo tiempo?',question:'¿Qué indica "mientras" en esta oración?',options:['Que las dos acciones ocurren al mismo tiempo','Que una acción ocurre antes que la otra','Que las acciones nunca se realizaron','Que hay un conflicto entre los personajes'],correct:0,explanation:'"Mientras" indica simultaneidad: el cocinero y el ayudante realizan sus acciones al mismo tiempo.',remember:'"Mientras" y "al mismo tiempo" indican que dos hechos ocurren de forma paralela y simultánea.'},
+      {type:'Secuencia con causa',mission:'Ordena con causa',fragment:'A) El semáforo se puso en rojo. B) Los carros se detuvieron. C) Los peatones cruzaron la calle.',hint:'¿Cuál es la causa de cada hecho?',question:'¿Cuál es el orden lógico causal de los hechos?',options:['A – B – C','B – C – A','C – A – B','B – A – C'],correct:0,explanation:'El semáforo (A) causó que los carros se detuvieran (B), lo que permitió que los peatones cruzaran (C). Cada hecho es consecuencia del anterior.',remember:'En la secuencia causal, cada hecho es la causa o consecuencia del que le precede o sigue.'},
+      {type:'Conector "cuando"',mission:'Detecta el momento',fragment:'"Cuando llegó la primavera, las flores comenzaron a brotar en el jardín."',hint:'¿Qué indica "cuando" sobre el tiempo?',question:'¿Qué función cumple "cuando" en esta secuencia?',options:['Indica el momento en que ocurre la segunda acción','Indica causa y efecto','Indica que las acciones son simultáneas','Indica el final de la historia'],correct:0,explanation:'"Cuando" introduce el momento temporal en que se produce la segunda acción. Conecta tiempo con acontecimiento.',remember:'"Cuando" señala el momento exacto en que ocurre un hecho, dentro de la secuencia temporal.'},
+      {type:'Hecho faltante',mission:'Completa con lógica',fragment:'"La canoa chocó contra una roca. ________. Finalmente, los exploradores llegaron a la orilla nadando."',hint:'¿Qué consecuencia lógica tiene chocar una canoa contra una roca?',question:'¿Qué hecho falta en la secuencia?',options:['La canoa se hundió','Los exploradores siguieron remando','El río se calmó','Encontraron un puente'],correct:0,explanation:'La secuencia lógica es: chocó → se hundió → nadaron hasta la orilla. El hundimiento es la consecuencia del choque.',remember:'Cada hecho faltante debe respetar la lógica causal: ser consecuencia del anterior y causa del siguiente.'},
+      {type:'Orden por conectores',mission:'Reconstruye la secuencia',fragment:'Fragmentos: "Después, lo cocinó." / "Antes, limpió el pescado." / "Finalmente, lo sirvió en la mesa." / "Primero, fue a pescar."',hint:'Los conectores "primero", "antes", "después" y "finalmente" te dicen el orden.',question:'¿Cuál es el orden correcto de los fragmentos?',options:['Fue a pescar – Limpió – Cocinó – Sirvió','Cocinó – Sirvió – Limpió – Pescó','Sirvió – Pescó – Limpió – Cocinó','Limpió – Pescó – Cocinó – Sirvió'],correct:0,explanation:'Los conectores dictan el orden: primero (pescó), antes (limpió), después (cocinó), finalmente (sirvió).',remember:'Los conectores de secuencia son marcadores explícitos del orden narrativo.'},
+      {type:'Causa oculta',mission:'Encuentra la causa',fragment:'"El río se desbordó. Por esa razón, las calles del pueblo quedaron inundadas."',hint:'¿Cuál es la causa y cuál la consecuencia?',question:'¿Cuál es la causa de la inundación de las calles?',options:['El desbordamiento del río','La lluvia fuerte','El viento','La rotura de una represa'],correct:0,explanation:'El texto es claro: el desbordamiento del río es la causa directa de la inundación de las calles.',remember:'La causa siempre antecede a la consecuencia en la secuencia narrativa causal.'},
+      {type:'Conector adversativo',mission:'Cambio en la secuencia',fragment:'"Tomás corrió con todo su esfuerzo durante la carrera. Sin embargo, llegó en segundo lugar."',hint:'"Sin embargo" introduce un giro inesperado.',question:'¿Qué función cumple "sin embargo" en la secuencia?',options:['Indica un resultado contrario a lo esperado','Indica que los hechos ocurren al mismo tiempo','Señala el inicio de la historia','Confirma la consecuencia lógica'],correct:0,explanation:'"Sin embargo" es un conector adversativo: introduce una consecuencia contraria o inesperada dentro de la secuencia.',remember:'"Sin embargo", "pero" y "aunque" introducen un giro o contraste dentro de la secuencia de hechos.'},
+      {type:'Secuencia con "luego"',mission:'Identifica el segundo hecho',fragment:'"María plantó las semillas en la tierra. Luego las regó todos los días durante un mes."',hint:'¿Cuál es el segundo hecho de la secuencia?',question:'¿Qué hecho ocurrió DESPUÉS de plantar las semillas?',options:['Regar las semillas todos los días','Comprar las semillas','Preparar la tierra','Recoger los frutos'],correct:0,explanation:'"Luego" indica que regar es la segunda acción, realizada después de plantar.',remember:'"Luego" siempre introduce el hecho que ocurre inmediatamente después del anterior.'},
+      {type:'Múltiples conectores',mission:'Analiza la secuencia completa',fragment:'"Porque hacía frío, Sofía encendió la chimenea. Luego preparó chocolate caliente. Finalmente, se sentó a leer su libro favorito."',hint:'Hay tres hechos y dos tipos de conectores.',question:'¿Cuántos hechos y cuántos tipos de conectores hay en este fragmento?',options:['3 hechos: conector causal + 2 temporales','2 hechos: 2 conectores causales','4 hechos: 3 conectores temporales','3 hechos: 3 conectores causales'],correct:0,explanation:'Tres hechos: encender chimenea, preparar chocolate, leer. "Porque" es causal; "luego" y "finalmente" son temporales.',remember:'Un texto puede combinar conectores causales y temporales para organizar su secuencia.'},
+      {type:'Conector de inicio',mission:'¿Cómo comienza?',fragment:'"En primer lugar, el detective examinó la escena del crimen. Luego interrogó a los testigos. Finalmente, identificó al culpable."',hint:'¿Qué conector indica el hecho inicial?',question:'¿Cuál es el conector que marca el primer hecho?',options:['En primer lugar','Luego','Finalmente','Identificó'],correct:0,explanation:'"En primer lugar" es un conector que introduce el hecho inicial de la secuencia, equivalente a "primero".',remember:'"En primer lugar", "para comenzar" y "primero" señalan el hecho que inicia la secuencia narrativa.'},
+      {type:'Lógica causal',mission:'Infiere el conector',fragment:'"El futbolista se lesionó la rodilla. ________, no pudo jugar en el partido del sábado."',hint:'¿Qué conector expresa que la lesión causó no poder jugar?',question:'¿Qué conector completa mejor la secuencia?',options:['Por eso','Sin embargo','Aunque','Porque'],correct:0,explanation:'"Por eso" introduce la consecuencia directa de la lesión (no poder jugar). Conecta causa con efecto.',remember:'"Por eso" introduce la consecuencia de algo que ya se mencionó: primero la causa, luego "por eso" + efecto.'},
+    ]
+  },
+
+  /* ─── MUNDO 3 — Intermedio ─── */
+  {
+    id:3,icon:'🔮',name:'El Laberinto Temporal',
+    theme:'Flashback, anticipación y narraciones no lineales',
+    desc:'Las historias no siempre se cuentan en orden. Aprende a identificar los saltos al pasado y al futuro dentro de una narración.',
+    key:'El flashback (analepsis) es un salto al pasado; la anticipación (prolepsis) adelanta el futuro. Las narraciones no lineales mezclan tiempos para crear suspenso o profundidad.',
+    concepts:[
+      {emoji:'⏪',name:'Flashback',def:'Salto al pasado dentro de la narración actual.'},
+      {emoji:'⏩',name:'Anticipación',def:'Adelanto de un hecho que ocurrirá después.'},
+      {emoji:'🌀',name:'No lineal',def:'Historia que no sigue el orden cronológico.'},
+      {emoji:'📍',name:'In medias res',def:'Comenzar la historia en el medio de la acción.'},
+    ],
+    questions:[
+      {type:'Flashback',mission:'Detecta el salto al pasado',fragment:'"Laura miraba el álbum de fotos. De repente, recordó aquel verano de 1998, cuando conoció a su mejor amiga en el campamento."',hint:'¿El narrador vuelve al pasado desde el presente?',question:'¿Qué recurso narrativo aparece en este fragmento?',options:['Flashback (analepsis)','Anticipación (prolepsis)','Secuencia lineal','Narración paralela'],correct:0,explanation:'Laura está en el presente mirando fotos, pero "recordó aquel verano de 1998" nos lleva al pasado. Eso es un flashback o analepsis.',remember:'El flashback interrumpe el presente narrativo para mostrar un evento del pasado.'},
+      {type:'Anticipación',mission:'Detecta el adelanto al futuro',fragment:'"Lo que nadie sabía entonces es que esa sería la última vez que verían el pueblo antes de la tormenta."',hint:'¿El narrador adelanta algo que todavía no ha ocurrido?',question:'¿Qué recurso narrativo se usa en este fragmento?',options:['Anticipación (prolepsis)','Flashback (analepsis)','Descripción estática','Elipsis temporal'],correct:0,explanation:'El narrador adelanta un hecho futuro ("sería la última vez"): eso es anticipación o prolepsis, sin que los personajes lo sepan.',remember:'La anticipación o prolepsis adelanta al lector algo que ocurrirá más adelante en la historia.'},
+      {type:'In medias res',mission:'Identifica el comienzo',fragment:'"El edificio ya ardía cuando los bomberos llegaron. Nadie supo después cómo había comenzado el incendio."',hint:'¿La historia comienza en el inicio de los hechos o en el medio?',question:'¿Cómo se llama esta técnica narrativa de comenzar en el medio de la acción?',options:['In medias res','Flashback','Anticipación','Secuencia lineal'],correct:0,explanation:'La historia comienza cuando el edificio ya arde (en el medio de la acción), no desde el inicio. Eso se llama "in medias res".',remember:'"In medias res" significa comenzar una historia en el momento de mayor tensión, sin introducción previa.'},
+      {type:'Orden real vs. narrado',mission:'Reconstruye el orden real',fragment:'"Contaron que antes del accidente, el conductor había estado en una fiesta. Horas después llegó la policía al lugar."',hint:'¿En qué orden realmente ocurrieron los hechos?',question:'¿Cuál es el orden cronológico REAL de los hechos?',options:['Fiesta – Accidente – Llegada de policía','Accidente – Fiesta – Llegada de policía','Llegada de policía – Fiesta – Accidente','Fiesta – Llegada de policía – Accidente'],correct:0,explanation:'Primero fue la fiesta, luego el accidente y después llegó la policía. El texto los presenta en orden diferente.',remember:'En una narración no lineal, debemos reconstruir el orden cronológico real independientemente del orden narrado.'},
+      {type:'Elipsis temporal',mission:'Detecta el salto de tiempo',fragment:'"Sebastián tenía doce años cuando entró al colegio. Años después, ya era un doctor reconocido en la ciudad."',hint:'¿Se omite parte del tiempo en la narración?',question:'¿Qué recurso usa el narrador al saltar de los 12 años a ser doctor?',options:['Elipsis temporal','Flashback','Anticipación','In medias res'],correct:0,explanation:'El narrador omite años de la vida de Sebastián (la elipsis temporal) y salta directamente al resultado final.',remember:'La elipsis temporal omite un período de tiempo para avanzar más rápido en la narración.'},
+      {type:'Flashback identificado',mission:'¿El pasado o el presente?',fragment:'"Caminaba por la ciudad cuando, de pronto, los olores de la panadería lo transportaron a su infancia, a las mañanas en casa de su abuela."',hint:'¿Hay un salto entre el presente y el pasado?',question:'¿Qué fragmento corresponde al flashback?',options:['A las mañanas en casa de su abuela','Caminaba por la ciudad','Los olores de la panadería','La ciudad estaba muy concurrida'],correct:0,explanation:'El presente es "caminaba por la ciudad". El flashback es "las mañanas en casa de su abuela" (imagen del pasado).',remember:'El flashback puede ser desencadenado por un estímulo sensorial (olor, sonido, imagen) que conecta el presente con el pasado.'},
+      {type:'Anticipación encubierta',mission:'¿Se adelanta algo?',fragment:'"Esa mañana, Elena tomó la decisión que cambiaría el rumbo de su vida, aunque entonces no lo sabía."',hint:'¿El narrador sabe algo que los personajes no saben?',question:'¿Qué tipo de anticipación usa el narrador en este fragmento?',options:['Anticipación implícita (el narrador adelanta sin revelar el qué)','Flashback encubierto','Secuencia lineal completa','Elipsis temporal breve'],correct:0,explanation:'El narrador adelanta que la decisión cambiará la vida de Elena, pero no dice cómo. Es una anticipación que genera suspenso.',remember:'La anticipación puede ser explícita (revela el futuro) o implícita (insinúa que algo importante ocurrirá).'},
+      {type:'Narración no lineal',mission:'Clasifica la estructura',fragment:'"La novela comienza con el funeral de Alonso. Los capítulos siguientes muestran su vida desde la niñez hasta su muerte."',hint:'¿Se narra en orden cronológico o se altera el tiempo?',question:'¿Cómo se clasifica la estructura narrativa de esta novela?',options:['No lineal: comienza por el final','Lineal: orden cronológico','In medias res: desde el conflicto','Circular: vuelve al inicio'],correct:0,explanation:'Comenzar por el funeral (el final) y luego narrar la vida desde el principio es una estructura no lineal.',remember:'Una narración no lineal puede comenzar por el final, el medio o intercalar pasado y presente.'},
+      {type:'Tiempo verbal en flashback',mission:'El tiempo verbal del flashback',fragment:'"Estaba sentada en el café cuando recordó que, de niña, solía ir allí con su padre todos los domingos."',hint:'¿Qué tiempo verbal aparece en la parte del flashback?',question:'¿Qué tiempo verbal marca el flashback en este fragmento?',options:['Pretérito imperfecto (solía ir)','Presente simple (está sentada)','Futuro (irá con su padre)','Pretérito perfecto (ha ido)'],correct:0,explanation:'"Solía ir" es pretérito imperfecto: indica una acción habitual en el pasado. Es característico de los flashbacks.',remember:'El pretérito imperfecto ("era", "hacía", "solía") suele aparecer en los flashbacks para describir acciones pasadas habituales.'},
+      {type:'Prolepsis literaria',mission:'Anticipa el futuro',fragment:'"Aquella tarde pareció normal. Sin embargo, en pocas horas todo habría cambiado para siempre."',hint:'¿El narrador adelanta lo que ocurrirá?',question:'¿Qué recurso narrativo crea el suspenso en este fragmento?',options:['Anticipación (prolepsis)','Flashback (analepsis)','Elipsis temporal','Secuencia lineal'],correct:0,explanation:'El narrador adelanta que en pocas horas todo cambiará, sin decir qué. Eso es una prolepsis que genera suspenso.',remember:'Las anticipaciones o prolepsis son herramientas para generar intriga y mantener la atención del lector.'},
+      {type:'Orden narrado',mission:'Distingue narrado vs. cronológico',fragment:'"El detective resolvió el caso. Días atrás, había encontrado la clave en una carta olvidada."',hint:'¿En qué orden se narran los hechos y cuál es el orden real?',question:'¿Cuál es el orden en que los hechos REALMENTE ocurrieron?',options:['Carta encontrada → Caso resuelto','Caso resuelto → Carta encontrada','Ambos ocurrieron al mismo tiempo','El texto no aclara el orden'],correct:0,explanation:'"Días atrás" nos indica que encontrar la carta fue anterior a resolver el caso, aunque en el texto aparece después.',remember:'"Días atrás", "anteriormente" y "tiempo antes" señalan que un hecho ocurrió antes de lo que se acaba de narrar.'},
+      {type:'Estructura circular',mission:'Identifica la estructura circular',fragment:'"La historia comienza con el protagonista frente al mar. Después de vivir cien aventuras, termina exactamente en el mismo lugar."',hint:'¿Dónde comienza y termina la historia?',question:'¿Cómo se llama esta estructura narrativa?',options:['Estructura circular','Estructura lineal','In medias res','Flashback múltiple'],correct:0,explanation:'La historia comienza y termina en el mismo punto (el mar). Esa es una estructura circular.',remember:'La estructura circular comienza y termina en el mismo punto, creando sensación de ciclo o destino.'},
+    ]
+  },
+
+  /* ─── MUNDO 4 — Avanzado ─── */
+  {
+    id:4,icon:'🔥',name:'La Forja de la Trama',
+    theme:'Secuencias en textos complejos e inferencias temporales',
+    desc:'Los textos más complejos mezclan tiempos, voces y perspectivas. Aquí debes reconstruir la secuencia completa con todas las pistas.',
+    key:'En textos complejos, la secuencia se reconstruye usando tiempos verbales, conectores implícitos y el contexto. Las inferencias temporales son esenciales para la comprensión profunda.',
+    concepts:[
+      {emoji:'🔍',name:'Inferencia temporal',def:'Deducir cuándo ocurrió algo sin que el texto lo diga explícitamente.'},
+      {emoji:'📖',name:'Voz narrativa',def:'El narrador puede alterar el orden según su perspectiva.'},
+      {emoji:'⚖️',name:'Causa-efecto',def:'Cada hecho complejo tiene múltiples causas y efectos encadenados.'},
+      {emoji:'🧩',name:'Secuencia implícita',def:'Orden que debe deducirse de las pistas contextuales.'},
+    ],
+    questions:[
+      {type:'Inferencia temporal',mission:'Deduce el momento',fragment:'"El periódico sobre la mesa tenía fecha del martes. La leche en la nevera había caducado el lunes. Cuando llegó la policía, el apartamento llevaba varios días cerrado."',hint:'¿Cuándo aproximadamente desapareció el habitante?',question:'¿Cuándo ocurrió probablemente el suceso que cerró el apartamento?',options:['Antes del martes (posiblemente el lunes o antes)','El jueves siguiente','Cuando llegó la policía','El miércoles por la noche'],correct:0,explanation:'La leche caducó el lunes y el periódico es del martes. Esto sugiere que el habitante desapareció antes del martes, ya que no recogió el periódico.',remember:'La inferencia temporal usa pistas del texto (fechas, estado de objetos) para deducir cuándo ocurrió algo.'},
+      {type:'Secuencia encadenada',mission:'Causa en cadena',fragment:'"La fábrica contaminó el río. El río mató los peces. Sin peces, los pescadores perdieron su trabajo. Sin ingresos, las familias emigraron."',hint:'¿Cuál es la cadena de causas y efectos?',question:'¿Cuál fue la causa ORIGINAL de toda la cadena?',options:['La contaminación de la fábrica','La muerte de los peces','La emigración de las familias','La pérdida del trabajo'],correct:0,explanation:'Todo se origina en la contaminación de la fábrica. Es la primera causa de una reacción en cadena.',remember:'En una secuencia causal encadenada, hay una causa original de la que se derivan todas las demás.'},
+      {type:'Perspectiva temporal',mission:'Distintas visiones del tiempo',fragment:'"Para la abuela, la guerra parecía ayer. Para su nieto, era historia antigua. Para el historiador, era un período de treinta años."',hint:'¿Cómo afecta la perspectiva al orden y la duración temporal?',question:'¿Qué enseña este fragmento sobre la secuencia narrativa?',options:['El tiempo narrativo depende de la perspectiva del narrador','Todos tienen la misma percepción del tiempo','La guerra duró un año','El nieto no conoce la historia'],correct:0,explanation:'Un mismo período puede sentirse "reciente" o "lejano" según quién lo narra. La perspectiva altera la percepción de la secuencia temporal.',remember:'La percepción del tiempo narrativo varía según la perspectiva del narrador o los personajes.'},
+      {type:'Reconstrucción compleja',mission:'Ordena la secuencia real',fragment:'El texto narra: (1) el entierro del rey, (2) su coronación, (3) su infancia. ¿Cuál es el orden cronológico real?',hint:'El texto no está en orden cronológico.',question:'¿Cuál es el orden cronológico real de los hechos narrados?',options:['Infancia – Coronación – Entierro','Coronación – Infancia – Entierro','Entierro – Coronación – Infancia','Infancia – Entierro – Coronación'],correct:0,explanation:'El orden real de la vida: infancia → coronación → entierro. El texto los presenta de forma invertida (estructura no lineal).',remember:'Siempre que un texto use flashbacks o narraciones no lineales, debemos reconstruir el orden cronológico real.'},
+      {type:'Narrador no confiable',mission:'El narrador altera el orden',fragment:'"Todo lo que les voy a contar ocurrió hace veinte años, aunque en ese tiempo yo era demasiado pequeño para entenderlo. Solo ahora comprendo lo que realmente pasó."',hint:'¿El narrador tiene toda la información desde el inicio?',question:'¿Qué efecto tiene este tipo de narrador en la secuencia de la historia?',options:['Altera el orden: cuenta desde el presente algo del pasado con comprensión actual','Narra en orden lineal sin alteraciones','Anticipa los hechos del futuro con precisión','Cuenta simultáneamente pasado y futuro'],correct:0,explanation:'El narrador adulto cuenta hechos de su infancia. Hay un desfase temporal entre cuándo ocurrieron los hechos y cuándo se entienden y narran.',remember:'El narrador puede contar hechos del pasado con la comprensión que tiene en el presente, creando dos capas temporales.'},
+      {type:'Secuencia implícita',mission:'La secuencia no dicha',fragment:'"Cuando los arqueólogos abrieron la tumba, encontraron monedas, herramientas y joyas. Todo indicaba que habían sido colocadas allí cuidadosamente."',hint:'¿Qué secuencia implícita existe antes de que los arqueólogos lleguen?',question:'¿Qué secuencia de hechos ANTERIORES se puede inferir?',options:['Alguien murió, fue enterrado con sus pertenencias y la tumba fue sellada','Los arqueólogos planearon la excavación','Las joyas fueron fabricadas en la tumba','La tumba fue abierta varias veces antes'],correct:0,explanation:'Aunque no se dice explícitamente, se infiere: alguien murió → fue enterrado con sus pertenencias → la tumba fue sellada → quedó olvidada → los arqueólogos la hallaron.',remember:'La secuencia implícita debe deducirse de los hechos mencionados y del conocimiento del mundo.'},
+      {type:'Doble línea temporal',mission:'Dos tiempos paralelos',fragment:'"En el presente, la detective investiga el crimen. En el pasado (que se muestra en los capítulos alternos), la víctima vivía su última semana."',hint:'¿Cuántas líneas temporales hay en esta narración?',question:'¿Cómo se llama esta técnica narrativa de mostrar dos tiempos paralelos?',options:['Narración en doble línea temporal','Flashback único','Anticipación simple','Elipsis temporal'],correct:0,explanation:'La alternancia entre el presente (investigación) y el pasado (última semana de la víctima) constituye una doble línea temporal paralela.',remember:'La doble línea temporal alterna entre dos momentos históricos o temporales a lo largo de la narración.'},
+      {type:'Orden de presentación',mission:'Narrado vs. ocurrido',fragment:'"Primero te contaré el robo del banco. Luego te explicaré qué llevó al ladrón a cometerlo. Así entenderás por qué todo terminó así."',hint:'¿El narrador cuenta los hechos en su orden cronológico real?',question:'¿En qué orden cronológico REAL ocurrieron los hechos?',options:['Vida del ladrón → decisión de robar → robo → consecuencias','Robo → vida del ladrón → consecuencias','Consecuencias → robo → vida del ladrón','Robo → consecuencias → vida del ladrón'],correct:0,explanation:'El orden real es: vida (causa) → robo (hecho) → consecuencias. El narrador los presenta en diferente orden por motivos dramáticos.',remember:'El narrador puede elegir el orden de presentación por razones dramáticas, sin seguir el orden cronológico real.'},
+      {type:'Reloj narrativo',mission:'¿Cuánto tiempo pasa?',fragment:'"La primera parte narra un lunes. La segunda, seis meses después. La tercera, décadas más tarde. La cuarta regresa al martes siguiente al lunes inicial."',hint:'¿Cuál es el orden cronológico real de las cuatro partes?',question:'¿En qué orden cronológico real van las cuatro partes?',options:['Primera – Cuarta – Segunda – Tercera','Primera – Segunda – Tercera – Cuarta','Cuarta – Primera – Segunda – Tercera','Segunda – Primera – Cuarta – Tercera'],correct:0,explanation:'Primera (lunes) → cuarta (martes) → segunda (6 meses después) → tercera (décadas más tarde). El orden narrado no coincide con el orden real.',remember:'Para reconstruir el orden cronológico, debemos prestar atención a las referencias temporales (días, meses, años) en el texto.'},
+      {type:'Causa múltiple',mission:'Varias causas, un efecto',fragment:'"La crisis fue causada por la sequía, la mala gestión del gobierno, el aumento de precios y la pandemia simultánea."',hint:'¿Hay una sola causa o son varias simultáneas?',question:'¿Cómo se llama la estructura causal cuando hay múltiples causas para un mismo efecto?',options:['Causalidad múltiple o convergente','Causalidad en cadena lineal','Secuencia temporal simple','Flashback causal'],correct:0,explanation:'Cuando varios factores simultáneos producen un mismo resultado, se habla de causalidad múltiple o convergente.',remember:'La causalidad puede ser simple (una causa, un efecto), en cadena o múltiple (varias causas, un efecto).'},
+      {type:'Inferencia de duración',mission:'¿Cuánto duró?',fragment:'"La carta llevaba el sello de mayo. La respuesta llegó cuando las hojas ya caían de los árboles."',hint:'¿En qué estación caen las hojas? ¿Cuánto tiempo pasó?',question:'¿Cuánto tiempo pasó aproximadamente entre la carta y la respuesta?',options:['Varios meses (de mayo al otoño)','Solo unos días','Exactamente un año','Pocas horas'],correct:0,explanation:'"Mayo" es primavera; las hojas caen en otoño (septiembre-noviembre). Pasaron varios meses entre la carta y la respuesta.',remember:'Las referencias a estaciones, clima o fenómenos naturales pueden indicar el paso del tiempo en una narración.'},
+      {type:'Secuencia de descubrimiento',mission:'Lo que el lector sabe',fragment:'"El lector sabe desde la primera página que el mayordomo es el culpable. Los personajes de la historia tardan 200 páginas en descubrirlo."',hint:'¿Hay diferencia entre lo que sabe el lector y lo que saben los personajes?',question:'¿Qué efecto narrativo crea esta diferencia de información?',options:['Ironía dramática: el lector sabe más que los personajes','Flashback: se revela el pasado','Anticipación: el futuro se adelanta al lector','Elipsis: se omite información clave'],correct:0,explanation:'Cuando el lector sabe algo que los personajes no saben, se crea una ironía dramática que genera tensión y suspenso.',remember:'La ironía dramática ocurre cuando el lector tiene información que los personajes desconocen.'},
+    ]
+  },
+
+  /* ─── MUNDO 5 — Experto ─── */
+  {
+    id:5,icon:'⚡',name:'La Tormenta Narrativa',
+    theme:'Secuencias en géneros complejos: thriller, lírica y drama',
+    desc:'Domina las secuencias en géneros literarios exigentes donde el orden es una herramienta artística y no solo cronológica.',
+    key:'En el thriller el orden crea suspenso; en la lírica el tiempo es subjetivo; en el drama el tiempo se construye en escena. Cada género usa la secuencia de forma diferente.',
+    concepts:[
+      {emoji:'🕵️',name:'Suspenso temporal',def:'Alterar el orden para crear incertidumbre y tension.'},
+      {emoji:'🎭',name:'Tiempo dramático',def:'El tiempo en teatro depende de las acciones en escena.'},
+      {emoji:'🎵',name:'Tiempo lírico',def:'En la poesía, el tiempo es emocional y subjetivo.'},
+      {emoji:'🌀',name:'Stream of consciousness',def:'Flujo de conciencia: mezcla presente, recuerdos y fantasías.'},
+    ],
+    questions:[
+      {type:'Suspenso por orden',mission:'El orden como suspenso',fragment:'"El asesino había dejado tres pistas. La detective encontró la primera. Luego la segunda. Cuando llegó a la tercera, era demasiado tarde."',hint:'¿Cómo usa el autor el orden para crear suspenso?',question:'¿Qué efecto produce narrar los hechos en este orden específico?',options:['Crea suspenso progresivo: cada pista aumenta la tensión hasta el clímax','Simplifica la historia para el lector','Elimina el misterio desde el principio','Revela al culpable desde el inicio'],correct:0,explanation:'Narrar las pistas una a una, en orden, con el remate "era demasiado tarde", construye un crescendo de tensión hasta el clímax.',remember:'En el thriller, el orden de revelación de información es una herramienta deliberada para construir suspenso.'},
+      {type:'Tiempo lírico',mission:'El tiempo en la poesía',fragment:'"Hoy te recuerdo como ayer. Mañana seguirás siendo el mismo ayer que hoy recuerdo."',hint:'¿El tiempo en este poema sigue un orden cronológico lógico?',question:'¿Cómo trata el tiempo este fragmento poético?',options:['El tiempo es circular y subjetivo: pasado, presente y futuro se funden','El tiempo sigue un orden cronológico lineal','Es un flashback narrativo clásico','Es una anticipación con fecha exacta'],correct:0,explanation:'En la lírica, el tiempo no es cronológico sino emocional. Pasado, presente y futuro se mezclan en la experiencia del hablante.',remember:'El tiempo lírico es subjetivo: expresa cómo se siente el tiempo, no cómo transcurre objetivamente.'},
+      {type:'Tiempo dramático',mission:'El tiempo en teatro',fragment:'"ACOTACIÓN: (Han pasado veinte años. Elena, ahora anciana, entra al mismo escenario donde de joven bailó por última vez.)"',hint:'¿Cómo se marca el paso del tiempo en el teatro?',question:'¿Cómo se comunica el paso del tiempo en una obra de teatro?',options:['Mediante acotaciones y la transformación visible de los personajes','Mediante flashbacks narrados en voz alta','Mediante anticipaciones del narrador externo','Mediante conectores temporales en los diálogos'],correct:0,explanation:'En el teatro, el tiempo se marca mediante acotaciones escénicas, cambios en la apariencia de los personajes y el escenario.',remember:'Las acotaciones teatrales son el equivalente dramático de los conectores temporales en la narrativa.'},
+      {type:'Flujo de conciencia',mission:'Tiempo interior',fragment:'"Caminaba y pensaba: el pan, el olor de la abuela, el miedo de ayer, el trabajo de mañana, el niño que fui, la lluvia ahora."',hint:'¿El tiempo sigue un orden externo o interior?',question:'¿Qué técnica narrativa mezcla presente, recuerdos y anticipaciones de esta manera?',options:['Flujo de conciencia (stream of consciousness)','Flashback narrativo clásico','Narración omnisciente lineal','Estructura circular'],correct:0,explanation:'El flujo de conciencia reproduce el pensamiento tal como ocurre: mezcla presente, pasado y futuro sin orden lógico externo.',remember:'El flujo de conciencia no sigue el orden cronológico sino el orden mental y emocional del personaje.'},
+      {type:'Thriller y revelación',mission:'El orden de la revelación',fragment:'"Capítulo 1: el cadáver. Capítulo 2: los sospechosos. Capítulo 3: las pistas. Capítulo 10: el móvil. Capítulo 20: el culpable."',hint:'¿Por qué el autor no revela al culpable al inicio?',question:'¿Por qué los thrillers revelan al culpable al final y no al principio?',options:['Para crear y mantener el suspenso a lo largo de toda la narración','Porque el autor no lo sabe desde el inicio','Para hacer la historia más corta','Porque el lector no puede entenderlo antes'],correct:0,explanation:'Revelar al culpable al final es una estrategia narrativa deliberada: mantiene al lector en suspenso y motivado a seguir leyendo.',remember:'En el thriller, el orden de revelación de información es la herramienta principal para mantener el interés del lector.'},
+      {type:'Epifanía temporal',mission:'El momento de comprensión',fragment:'"Durante años no entendió por qué su padre se había ido. En aquel momento, al leer la carta, todo se iluminó de golpe."',hint:'¿Hay un momento específico de comprensión que reorganiza toda la secuencia?',question:'¿Cómo se llama el momento narrativo en que un personaje comprende de repente algo importante?',options:['Epifanía','Flashback','Anticipación','Clímax violento'],correct:0,explanation:'La epifanía es el momento de iluminación súbita en que un personaje comprende algo que reorganiza toda su visión de los hechos pasados.',remember:'La epifanía reordena retrospectivamente todos los hechos narrados: el personaje (y el lector) los ve con nueva luz.'},
+      {type:'Tempo narrativo',mission:'Rápido o lento',fragment:'"En tres líneas, la novela narra veinte años de paz. En veinte páginas, describe detalladamente los cinco minutos del crimen."',hint:'¿Qué relación hay entre la duración real y la duración narrada?',question:'¿Qué nos dice esto sobre el TEMPO narrativo del autor?',options:['El autor acelera lo que le parece poco relevante y ralentiza lo que es crucial','El autor siempre narra en tiempo real','El autor prefiere las historias cortas','El tiempo narrado siempre es igual al tiempo real'],correct:0,explanation:'El tempo narrativo puede acelerarse (elipsis) o desacelerarse (escena detallada) según la importancia dramática del momento.',remember:'El tempo narrativo refleja las prioridades del autor: lo que más le interesa se narra más lentamente y con más detalle.'},
+      {type:'Prolepsis en drama',mission:'La tragedia anunciada',fragment:'"CORO: Ay, Edipo, si supieras lo que te espera... (El rey Edipo sigue buscando al culpable de la maldición sin saber que es él mismo.)"',hint:'¿El coro sabe algo que el personaje no sabe?',question:'¿Qué técnica narrativa-temporal usa el coro griego en este fragmento?',options:['Anticipación dramática (prolepsis): el coro adelanta el destino del héroe','Flashback: el coro recuerda el pasado del héroe','Elipsis: el coro omite información clave','Estructura circular: el coro repite lo ya narrado'],correct:0,explanation:'El coro sabe el desenlace y lo anticipa al espectador, creando ironía trágica. El héroe ignora su destino mientras avanza hacia él.',remember:'La anticipación dramática en el teatro griego crea ironia trágica: el espectador sabe lo que el personaje ignora.'},
+      {type:'Retrospección',mission:'Narrar desde el final',fragment:'"Ahora que todo ha terminado, puedo contarles cómo empezó aquella historia que cambió mi vida para siempre."',hint:'¿El narrador cuenta desde el final o desde el principio?',question:'¿Cómo se llama la técnica de narrar toda la historia mirando hacia atrás desde el final?',options:['Narración retrospectiva','Narración prospectiva','Flashback simple','In medias res'],correct:0,explanation:'La narración retrospectiva ocurre cuando el narrador, desde un punto final, mira hacia atrás y cuenta toda la historia.',remember:'La narración retrospectiva implica que el narrador ya conoce el desenlace cuando comienza a contar la historia.'},
+      {type:'Múltiples flashbacks',mission:'Flashbacks superpuestos',fragment:'"Cada capítulo revelaba un recuerdo diferente del mismo evento, visto desde la perspectiva de un personaje distinto."',hint:'¿Qué pasa cuando varios personajes recuerdan el mismo momento?',question:'¿Qué efecto produce mostrar el mismo evento pasado desde múltiples perspectivas?',options:['Revela la complejidad del evento y cuestiona la verdad objetiva de la secuencia','Simplifica la comprensión del evento','Establece un único orden cronológico definitivo','Elimina el suspenso de la narración'],correct:0,explanation:'Ver el mismo evento desde distintas perspectivas muestra que no hay una sola versión "verdadera" del orden y los hechos.',remember:'Los flashbacks múltiples sobre un mismo evento muestran la subjetividad del recuerdo y la complejidad de la verdad narrativa.'},
+      {type:'Tiempo simbólico',mission:'El tiempo como símbolo',fragment:'"El reloj del salón se detuvo exactamente a las 3:47 de la tarde del día en que murió el abuelo. Nadie lo volvió a poner en marcha."',hint:'¿El reloj detenido es solo un hecho o también un símbolo?',question:'¿Qué representa la secuencia temporal del reloj detenido en este fragmento?',options:['El tiempo emocional se detuvo con la muerte: el duelo congela el tiempo interior','Es simplemente un hecho mecánico sin valor narrativo','Indica que la historia ocurre en el pasado','Señala el inicio de un flashback'],correct:0,explanation:'El reloj detenido simboliza que el tiempo emocional de la familia se congeló en el momento de la pérdida. El tiempo objetivo sigue, el subjetivo no.',remember:'En la literatura, los objetos relacionados con el tiempo pueden simbolizar el impacto emocional de los hechos en los personajes.'},
+      {type:'Clímax temporal',mission:'El momento cumbre',fragment:'"Todo había llevado a ese instante: los años de entrenamiento, los fracasos, las traiciones. Y en apenas tres segundos, saltó y tocó el cielo."',hint:'¿Toda la secuencia converge en un único instante?',question:'¿Cómo se llama el momento narrativo hacia el que converge toda la secuencia?',options:['Clímax narrativo','Flashback','Desenlace trágico','Elipsis temporal'],correct:0,explanation:'El clímax es el momento de mayor tensión hacia el que converge toda la secuencia narrativa. Aquí, años de historia convergen en "tres segundos".',remember:'El clímax es el punto de mayor tensión en la secuencia; antes se acumula tensión, después viene el desenlace.'},
+    ]
+  },
+
+  /* ─── MUNDO 6 — Maestro ─── */
+  {
+    id:6,icon:'👑',name:'El Trono del Narrador Maestro',
+    theme:'Análisis profundo: secuencias en obras canónicas',
+    desc:'El nivel definitivo. Analiza las secuencias narrativas en obras de la literatura universal y demuestra tu maestría absoluta.',
+    key:'El maestro de las secuencias sabe que el orden no es un accidente: es una decisión artística. Cada flashback, cada anticipación, cada elipsis tiene un propósito dramático o temático.',
+    concepts:[
+      {emoji:'📚',name:'Canon literario',def:'Obras fundamentales cuya estructura narrativa es modelo.'},
+      {emoji:'🎨',name:'Propósito artístico',def:'El orden es una decisión estética con propósito definido.'},
+      {emoji:'🏛️',name:'Análisis profundo',def:'Interpretar por qué el autor eligió ese orden y no otro.'},
+      {emoji:'✨',name:'Maestría',def:'Integrar todos los recursos temporales con conocimiento crítico.'},
+    ],
+    questions:[
+      {type:'Análisis canónico',mission:'Cien años de soledad',fragment:'"La novela de García Márquez comienza: «Muchos años después, frente al pelotón de fusilamiento, el coronel Aureliano Buendía había de recordar aquella tarde remota en que su padre lo llevó a conocer el hielo.»"',hint:'¿Desde qué punto temporal narra el inicio? ¿Cuántas temporalidades hay?',question:'¿Cuántas temporalidades distintas hay en esta única oración inicial?',options:['Tres: el presente (pelotón), el futuro desde el pasado y la infancia remota','Dos: el pasado y el presente','Una sola línea temporal lineal','Cuatro: cuatro tiempos distintos'],correct:0,explanation:'1) El presente narrativo (frente al pelotón). 2) "Muchos años después" señala el presente desde el pasado. 3) La infancia remota del hielo. Tres capas temporales en una sola oración.',remember:'García Márquez comprime múltiples temporalidades en una sola frase, convirtiendo la secuencia en una espiral temporal.'},
+      {type:'Estructura de El Quijote',mission:'La narración dentro de la narración',fragment:'"Cervantes presenta a Cide Hamete Benengeli como el supuesto autor árabe de los manuscritos que él "traduce". La historia del Quijote es una historia dentro de otra historia."',hint:'¿Cuántas capas narrativas hay?',question:'¿Qué efecto produce esta estructura de "narración dentro de la narración"?',options:['Crea distancia irónica y cuestiona la autenticidad de toda la secuencia narrativa','Simplifica la historia para el lector del siglo XVII','Elimina la necesidad de un orden cronológico','Acelera el ritmo narrativo de la novela'],correct:0,explanation:'Al atribuir la historia a un narrador ficticio (Cide Hamete), Cervantes cuestiona la autenticidad de cualquier relato y crea una ironía metanarrativa.',remember:'La metanarración (historia dentro de una historia) cuestiona la fiabilidad de cualquier narrador y su versión de los hechos.'},
+      {type:'Tiempo en Macondo',mission:'Tiempo mítico vs. histórico',fragment:'"En Macondo, el tiempo parece circular: los Buendía repiten los mismos errores generación tras generación, como si la historia no avanzara sino que girara."',hint:'¿El tiempo en Macondo es lineal (histórico) o circular (mítico)?',question:'¿Qué tipo de tiempo narrativo domina en Cien años de soledad?',options:['Tiempo circular o mítico: la historia se repite como destino','Tiempo lineal: la historia avanza progresivamente','Tiempo discontinuo: sin relación entre generaciones','Tiempo estático: nada cambia nunca'],correct:0,explanation:'El tiempo mítico es circular: los hechos se repiten, los nombres se repiten y la historia parece condenada a girar eternamente.',remember:'El tiempo mítico o circular se opone al tiempo histórico lineal: en él, la historia se repite como destino inexorable.'},
+      {type:'Rashomon narrativo',mission:'La verdad de la secuencia',fragment:'"En la película Rashomon (y en su fuente literaria de Akutagawa), cuatro testigos cuentan el mismo crimen en órdenes y versiones completamente diferentes."',hint:'¿Hay una secuencia verdadera en Rashomon?',question:'¿Qué cuestiona Rashomon sobre la secuencia narrativa?',options:['Que no existe una secuencia objetiva: cada perspectiva construye su propia versión de los hechos','Que siempre hay un orden cronológico definitivo y verificable','Que el tiempo es siempre circular en las narraciones japonesas','Que los flashbacks son siempre más confiables que el presente'],correct:0,explanation:'Rashomon demuestra que la "verdad" de una secuencia depende de quién la narra y cuál es su perspectiva e interés.',remember:'La pluralidad de versiones de un mismo hecho cuestiona la existencia de una secuencia narrativa objetiva y universal.'},
+      {type:'Woolf y el tiempo interior',mission:'La señora Dalloway',fragment:'"En La señora Dalloway, Virginia Woolf narra un solo día de junio en Londres, pero en ese día caben décadas de recuerdos de todos los personajes."',hint:'¿Cuánto tiempo "real" abarca la novela y cuánto tiempo "interior"?',question:'¿Qué nos enseña esta estructura sobre el tiempo narrativo?',options:['El tiempo interior (subjetivo) puede contener mucho más que el tiempo exterior (cronológico)','El tiempo siempre avanza de forma lineal aunque los personajes recuerden','Un solo día cronológico equivale siempre a un solo capítulo','Virginia Woolf usa solo flashbacks sin tiempo presente'],correct:0,explanation:'Woolf demuestra que un solo día cronológico puede contener décadas de experiencia subjetiva. El tiempo interior es más rico que el exterior.',remember:'El tiempo interior (flujo de conciencia) puede expandir un instante hasta abarcar toda una vida de experiencias y recuerdos.'},
+      {type:'Estructura del thriller',mission:'El thriller y el orden invertido',fragment:'"En muchos thrillers modernos, el primer capítulo muestra el crimen ya cometido. El resto de la novela retrocede para mostrar cómo y por qué ocurrió."',hint:'¿Por qué el thriller invierte el orden cronológico?',question:'¿Cuál es el propósito narrativo de comenzar por el crimen y luego retroceder?',options:['Crear un flashback extendido que mantenga la intriga sobre los motivos y el perpetrador','Simplificar la trama para el lector','Eliminar el suspenso revelando todo desde el inicio','Seguir el orden cronológico natural de los hechos'],correct:0,explanation:'Comenzar por el crimen y retroceder convierte toda la novela en un flashback extendido: sabemos qué pasó pero no cómo ni por qué.',remember:'El flashback extendido (la novela como memoria) es una de las estructuras más poderosas del thriller y la novela negra.'},
+      {type:'El tiempo en Faulkner',mission:'El sonido y la furia',fragment:'"En El sonido y la furia de Faulkner, la novela tiene cuatro secciones narradas por distintas voces en distintos tiempos: 1928, 1910, 1928 y sin fecha."',hint:'¿El lector recibe los hechos en orden cronológico?',question:'¿Por qué Faulkner fragmenta así el tiempo en su novela?',options:['Para mostrar que la memoria y el trauma distorsionan la percepción del tiempo','Para facilitar la lectura al dividir la historia en partes','Para crear un orden cronológico alternativo más claro','Para revelar al culpable al final de cada sección'],correct:0,explanation:'Faulkner fragmenta el tiempo porque sus personajes están traumatizados: la memoria rota distorsiona la secuencia y revela la naturaleza del sufrimiento.',remember:'La fragmentación temporal puede reflejar el estado psicológico de los personajes: un tiempo roto revela una mente rota.'},
+      {type:'Prolepsis en tragedia',mission:'El destino anunciado',fragment:'"En Edipo Rey de Sófocles, el oráculo predice desde el inicio que Edipo matará a su padre y se casará con su madre. Toda la obra es la anticipación de ese destino."',hint:'¿La obra entera es una gran prolepsis?',question:'¿Cuál es el efecto de anunciar el destino desde el inicio en una tragedia?',options:['Crea ironía trágica máxima: el espectador ve al héroe avanzar hacia un destino que ya conoce','Elimina todo el suspenso y hace la obra menos interesante','El espectador no necesita seguir la secuencia de los hechos','El héroe puede evitar su destino gracias a la anticipación'],correct:0,explanation:'Conocer el destino desde el inicio crea la mayor ironía trágica posible: el espectador sufre viendo al héroe sin saberlo.',remember:'En la tragedia griega, la anticipación del destino no elimina el suspenso sino que lo transforma en sufrimiento anticipado.'},
+      {type:'Metáfora temporal',mission:'El tiempo como personaje',fragment:'"En Pedro Páramo de Rulfo, los muertos hablan desde sus tumbas confundiendo pasado y presente. El tiempo deja de ser una línea para convertirse en un espacio habitado por voces."',hint:'¿El tiempo en Pedro Páramo funciona como en una novela convencional?',question:'¿Cómo conceptualiza el tiempo esta obra de Rulfo?',options:['Como un espacio simultáneo donde pasado y presente coexisten sin jerarquía temporal','Como una línea cronológica clara con flashbacks identificados','Como una anticipación constante hacia el futuro de Comala','Como un tiempo circular que se repite cada cien años'],correct:0,explanation:'En Pedro Páramo, el tiempo no es una línea sino un espacio donde vivos y muertos, pasado y presente, coexisten simultáneamente.',remember:'Algunas obras radicales disuelven la secuencia temporal y la convierten en un espacio simultáneo donde todo coexiste.'},
+      {type:'Análisis de secuencia',mission:'El propósito del orden',fragment:'"Un autor elige comenzar su novela con el final, desarrollar el centro y cerrar con el principio. ¿Para qué sirve esta estructura espejo?"',hint:'¿Qué experiencia le da al lector este orden invertido?',question:'¿Cuál es el propósito artístico de una estructura espejo (final-medio-inicio)?',options:['Hace que el lector reinterprete retrospectivamente cada hecho al conocer primero su consecuencia','Facilita la comprensión al revelar el desenlace primero','Elimina el suspenso innecesario para el lector contemporáneo','Es una técnica sin propósito narrativo claro'],correct:0,explanation:'Conocer el final primero hace que el lector re-lea cada hecho anterior con otro significado: sabe adónde lleva, pero descubre por qué.',remember:'La estructura espejo o invertida enriquece la relectura: cada hecho pasado adquiere nuevo significado con el desenlace ya conocido.'},
+      {type:'Tiempo y memoria',mission:'Proust y el tiempo perdido',fragment:'"En En busca del tiempo perdido de Proust, una magdalena mojada en té desencadena miles de páginas de recuerdos. La secuencia entera es un flashback iniciado por un olor."',hint:'¿Cuál es el mecanismo narrativo que desencadena toda la secuencia?',question:'¿Qué nos enseña esta obra sobre el flashback y la memoria involuntaria?',options:['Que la memoria involuntaria (detonada por los sentidos) puede reorganizar toda la secuencia narrativa de una vida','Que el flashback siempre es un recurso voluntario del narrador','Que el tiempo en Proust sigue un orden cronológico lineal','Que la magdalena es simplemente un desayuno sin valor narrativo'],correct:0,explanation:'Proust demuestra que la memoria involuntaria (desencadenada por sentidos) puede suministrar la estructura narrativa de una obra entera.',remember:'La memoria involuntaria es el mecanismo por el que un estímulo sensorial desencadena un flashback profundo e involuntario.'},
+      {type:'Maestría total',mission:'El narrador que lo sabe todo',fragment:'"El narrador omnisciente de Tolstói en Guerra y Paz mueve su ojo narrativo entre 1805 y 1820, entre Moscú y París, con pleno control del pasado, presente y futuro de cada personaje."',hint:'¿Qué ventaja tiene el narrador omnisciente sobre el tiempo?',question:'¿Qué capacidades temporales tiene el narrador omnisciente?',options:['Puede narrar simultáneamente múltiples tiempos, lugares y perspectivas con total libertad','Solo puede narrar en orden cronológico lineal','Solo conoce el presente de los personajes','Debe respetar el orden en que ocurren los hechos'],correct:0,explanation:'El narrador omnisciente tiene libertad total: conoce el pasado, el presente y el futuro de todos los personajes y puede moverse entre ellos a voluntad.',remember:'El narrador omnisciente es el maestro absoluto del tiempo narrativo: no está limitado por ningún orden cronológico.'},
+    ]
+  }
+];
+
+// ══════════════════════════════════════════════════════════
+//  AUDIO
+// ══════════════════════════════════════════════════════════
+let audioCtx=null, soundEnabled=true;
+function getAudioCtx(){if(!audioCtx)audioCtx=new(window.AudioContext||window.webkitAudioContext)();return audioCtx;}
+function playTone(f,t,d,v=0.13,dl=0){
+  if(!soundEnabled)return;
+  try{const c=getAudioCtx(),o=c.createOscillator(),g=c.createGain();
+  o.connect(g);g.connect(c.destination);o.type=t;o.frequency.setValueAtTime(f,c.currentTime+dl);
+  g.gain.setValueAtTime(0,c.currentTime+dl);g.gain.linearRampToValueAtTime(v,c.currentTime+dl+.01);
+  g.gain.linearRampToValueAtTime(0,c.currentTime+dl+d);o.start(c.currentTime+dl);o.stop(c.currentTime+dl+d+.05);}catch(e){}
+}
+function sndStart()  {[261,329,392,523].forEach((f,i)=>playTone(f,'sine',.25,.12,i*.12));}
+function sndSelect() {playTone(440,'triangle',.1,.1);}
+function sndOk()     {[523,659,784,1047].forEach((f,i)=>playTone(f,'sine',.2,.13,i*.1));}
+function sndFail()   {playTone(200,'sawtooth',.15,.12);playTone(180,'sawtooth',.15,.12,.15);}
+function sndAlert()  {playTone(880,'sine',.08,.08);playTone(880,'sine',.08,.08,.2);}
+function sndUnlock() {[392,494,587,784,988].forEach((f,i)=>playTone(f,'sine',.3,.15,i*.13));}
+
+// ══════════════════════════════════════════════════════════
+//  AMBIENT
+// ══════════════════════════════════════════════════════════
+function buildAmbient(){
+  const el=document.getElementById('ambient');
+  const ch=['📖','📜','✨','🪶','🎭','⭐','🌙','📝','🔮','📚','🗺️','🔍','✍️','⏰','🕰️','📑'];
+  for(let i=0;i<20;i++){
+    const s=document.createElement('span');
+    s.textContent=ch[Math.floor(Math.random()*ch.length)];
+    s.style.left=Math.random()*100+'vw';
+    s.style.animationDuration=(18+Math.random()*28)+'s';
+    s.style.animationDelay=(Math.random()*22)+'s';
+    s.style.fontSize=(1+Math.random()*1.4)+'rem';
+    el.appendChild(s);
+  }
+}
+
+// ══════════════════════════════════════════════════════════
+//  CONFETTI
+// ══════════════════════════════════════════════════════════
+let cPart=[],cAnim=null;
+const cCv=document.getElementById('confetti-canvas'),cCtx=cCv.getContext('2d');
+function launchConfetti(big=false){
+  cCv.width=window.innerWidth;cCv.height=window.innerHeight;cPart=[];
+  const n=big?200:100;
+  for(let i=0;i<n;i++)cPart.push({x:Math.random()*cCv.width,y:-10-Math.random()*120,r:3+Math.random()*(big?9:6),d:2+Math.random()*3,color:`hsl(${Math.random()*360},90%,65%)`,tilt:Math.random()*10-5,ta:0,ti:.05+Math.random()*.1});
+  if(cAnim)cancelAnimationFrame(cAnim);
+  animC();
+  setTimeout(()=>{cancelAnimationFrame(cAnim);cCtx.clearRect(0,0,cCv.width,cCv.height);},big?5000:3000);
+}
+function animC(){
+  cCtx.clearRect(0,0,cCv.width,cCv.height);
+  cPart.forEach(p=>{p.ta+=p.ti;p.y+=p.d;p.tilt=Math.sin(p.ta)*12;cCtx.fillStyle=p.color;cCtx.beginPath();cCtx.ellipse(p.x,p.y,p.r,p.r/2,p.tilt,0,Math.PI*2);cCtx.fill();});
+  cPart=cPart.filter(p=>p.y<cCv.height+20);
+  if(cPart.length>0)cAnim=requestAnimationFrame(animC);
+}
+
+// ══════════════════════════════════════════════════════════
+//  PLAYER STATE
+// ══════════════════════════════════════════════════════════
+let playerName='', playerAvatar='f';
+let totalScore=0;                  // puntos acumulados entre mundos
+let worldScores=[0,0,0,0,0,0];    // mejor puntaje por mundo
+let unlockedWorlds=[true,false,false,false,false,false]; // mundo 1 siempre desbloqueado
+
+const AVATAR_EMOJI={f:'🧑‍💻',m:'🧑‍🚀'};
+const LEVELS_PER_SESSION=5;
+
+// Estado de la sesión actual
+let currentWorldIdx=0, sessionLevels=[], currentLevel=0;
+let score=0, lives=0, combo=0;
+let timerInterval=null, timerSeconds=0, answered=false;
+
+// ══════════════════════════════════════════════════════════
+//  REGISTRO
+// ══════════════════════════════════════════════════════════
+document.getElementById('playerNameInput').addEventListener('input',checkReady);
+function selectAvatar(g){
+  playerAvatar=g;
+  document.getElementById('avatarF').classList.toggle('selected',g==='f');
+  document.getElementById('avatarM').classList.toggle('selected',g==='m');
+  checkReady();
+}
+function checkReady(){
+  const name=document.getElementById('playerNameInput').value.trim();
+  const ready=name.length>0&&(document.getElementById('avatarF').classList.contains('selected')||document.getElementById('avatarM').classList.contains('selected'));
+  document.getElementById('btnEnter').classList.toggle('ready',ready);
+}
+function enterGame(){
+  playerName=document.getElementById('playerNameInput').value.trim();
+  if(!playerName||(playerAvatar!=='f'&&playerAvatar!=='m'))return;
+  sndStart();
+  updatePlayerUI();
+  buildWorldsGrid();
+  showScreen('screen-home');
+}
+
+// ══════════════════════════════════════════════════════════
+//  PLAYER UI
+// ══════════════════════════════════════════════════════════
+function updatePlayerUI(){
+  const av=AVATAR_EMOJI[playerAvatar];
+  document.getElementById('pillAvatar').textContent=av;
+  document.getElementById('pillName').textContent=playerName;
+  document.getElementById('hudAvatar').textContent=av;
+  document.getElementById('totalScoreDisplay').textContent=totalScore;
+  document.getElementById('endAvatar').textContent=av;
+  document.getElementById('endPlayerName').textContent=playerName;
+}
+
+// ══════════════════════════════════════════════════════════
+//  BUILD WORLDS GRID
+// ══════════════════════════════════════════════════════════
+function buildWorldsGrid(){
+  const grid=document.getElementById('worldsGrid');
+  grid.innerHTML='';
+  WORLDS.forEach((w,i)=>{
+    const d=DIFF[i];
+    const locked=!unlockedWorlds[i];
+    const card=document.createElement('div');
+    card.className='world-card'+(locked?' locked':'');
+    card.setAttribute('data-world',w.id);
+    const stars='⭐'.repeat(i+1);
+    const bestPts=worldScores[i]>0?`<div style="font-family:'Space Mono',monospace;font-size:.6rem;color:${d.color};margin-top:.3rem">Mejor: ${worldScores[i]} pts</div>`:'';
+    card.innerHTML=`
+      ${locked?'<span class="lock-badge">🔒</span>':''}
+      <span class="world-icon">${w.icon}</span>
+      <div class="world-name">${w.name}</div>
+      <div class="world-difficulty" style="color:${d.color}">${d.label}</div>
+      <div class="world-theme">${w.theme}</div>
+      <div class="world-meta">
+        <span class="stars">${stars}</span>
+        <span>· ×${d.mult} puntos · ⏱ ${d.timer}s</span>
+      </div>
+      ${i>0?`<div class="req-score" style="color:${locked?'#6a5030':''+d.color}">🔓 Requiere ${d.req} pts totales</div>`:''}
+      ${bestPts}
+    `;
+    if(!locked)card.addEventListener('click',()=>openLesson(i));
+    grid.appendChild(card);
+  });
+  document.getElementById('totalScoreDisplay').textContent=totalScore;
+}
+
+// ══════════════════════════════════════════════════════════
+//  LECCIÓN
+// ══════════════════════════════════════════════════════════
+function openLesson(idx){
+  sndStart();
+  currentWorldIdx=idx;
+  const w=WORLDS[idx], d=DIFF[idx];
+  document.getElementById('lessonIcon').textContent=w.icon;
+  document.getElementById('lessonName').textContent=w.name;
+  document.getElementById('lessonName').style.color=d.color;
+  const badge=document.getElementById('lessonDiffBadge');
+  badge.textContent=d.label;
+  badge.style.background=`rgba(${hexToRgb(d.color)},.12)`;
+  badge.style.color=d.color;
+  badge.style.border=`1px solid rgba(${hexToRgb(d.color)},.3)`;
+  document.getElementById('lessonDesc').textContent=w.desc;
+  document.getElementById('lessonKey').textContent=w.key;
+  document.getElementById('screen-lesson').style.background=`radial-gradient(ellipse at 30% 20%,${darkColor(d.color)},#0c0906 80%)`;
+  const btn=document.getElementById('btnPlay');
+  btn.style.background=`linear-gradient(135deg,${darkColor(d.color)},${d.color})`;
+  btn.style.color='#fff';
+  const cg=document.getElementById('conceptsGrid');cg.innerHTML='';
+  w.concepts.forEach(c=>{
+    const div=document.createElement('div');div.className='concept-card';
+    div.innerHTML=`<span class="concept-emoji">${c.emoji}</span><div class="concept-name" style="color:${d.color}">${c.name}</div><div class="concept-def">${c.def}</div>`;
+    cg.appendChild(div);
+  });
+  showScreen('screen-lesson');
+}
+
+function hexToRgb(hex){
+  const r=parseInt(hex.slice(1,3),16),g=parseInt(hex.slice(3,5),16),b=parseInt(hex.slice(5,7),16);
+  return`${r},${g},${b}`;
+}
+function darkColor(hex){
+  const r=Math.round(parseInt(hex.slice(1,3),16)*0.35);
+  const g=Math.round(parseInt(hex.slice(3,5),16)*0.35);
+  const b=Math.round(parseInt(hex.slice(5,7),16)*0.35);
+  return`rgb(${r},${g},${b})`;
+}
+
+document.getElementById('lessonBack').addEventListener('click',goHome);
+document.getElementById('btnPlay').addEventListener('click',startGame);
+
+// ══════════════════════════════════════════════════════════
+//  JUEGO
+// ══════════════════════════════════════════════════════════
+function startGame(){
+  const w=WORLDS[currentWorldIdx], d=DIFF[currentWorldIdx];
+  const picked=pickRandom(w.questions,LEVELS_PER_SESSION);
+  sessionLevels=picked.map(q=>{const sh=shuffleOptions(q);return{...q,options:sh.options,correct:sh.correct};});
+  currentLevel=0; score=0; lives=d.lives; combo=0;
+  applyWorldTheme();
+  showScreen('screen-game');
+  loadLevel();
+}
+
+function applyWorldTheme(){
+  const w=WORLDS[currentWorldIdx], d=DIFF[currentWorldIdx];
+  document.getElementById('screen-game').style.background=`radial-gradient(ellipse at 50% 0%,${darkColor(d.color)},#0c0906 80%)`;
+  document.getElementById('hudWorldName').textContent=`${w.icon} ${w.name}`;
+  document.getElementById('hudWorldName').style.color=d.color;
+  document.querySelector('.progress-bar').style.background=`linear-gradient(90deg,${d.color},${d.color}88)`;
+}
+
+function loadLevel(){
+  if(currentLevel>=sessionLevels.length){showEnd();return;}
+  answered=false;
+  const lv=sessionLevels[currentLevel], d=DIFF[currentWorldIdx];
+  updateHUD();
+  updateCombo();
+
+  const pct=(currentLevel/sessionLevels.length)*100;
+  document.getElementById('progressBar').style.width=pct+'%';
+  document.getElementById('progressLabel').textContent=`Nivel ${currentLevel+1} de ${sessionLevels.length}`;
+
+  const typeBadge=document.getElementById('levelTypeBadge');
+  typeBadge.textContent=lv.type;
+  typeBadge.style.background=`rgba(${hexToRgb(d.color)},.12)`;
+  typeBadge.style.color=d.color;
+  typeBadge.style.border=`1px solid rgba(${hexToRgb(d.color)},.25)`;
+
+  document.getElementById('levelMission').textContent=`🎯 ${lv.mission}`;
+  document.getElementById('levelFragment').textContent=lv.fragment;
+  document.getElementById('levelHint').textContent=lv.hint;
+  document.getElementById('levelQuestion').textContent=lv.question;
+
+  const og=document.getElementById('optionsGrid');og.innerHTML='';
+  lv.options.forEach((opt,i)=>{
+    const btn=document.createElement('button');btn.className='option-btn';
+    btn.textContent=`${['A','B','C','D'][i]}) ${opt}`;
+    btn.addEventListener('click',()=>selectOption(i));
+    og.appendChild(btn);
+  });
+  startTimer();
+}
+
+function updateHUD(){
+  const d=DIFF[currentWorldIdx];
+  document.getElementById('hudScore').textContent=`⭐ ${score}`;
+  document.getElementById('hudLives').textContent=Array.from({length:DIFF[currentWorldIdx].lives},(_,i)=>i<lives?'❤️':'🖤').join('');
+}
+
+function updateCombo(){
+  const badge=document.getElementById('comboBadge');
+  badge.textContent=combo>=3?`🔥 Racha: ${combo} ¡Imparable!`:`🔥 Racha: ${combo}`;
+  badge.className='combo-badge'+(combo>=3?' hot':'');
+}
+
+function startTimer(){
+  clearInterval(timerInterval);
+  timerSeconds=DIFF[currentWorldIdx].timer;
+  updateTimerBar();
+  timerInterval=setInterval(()=>{
+    timerSeconds--;updateTimerBar();
+    if(timerSeconds===Math.floor(DIFF[currentWorldIdx].timer*0.25))sndAlert();
+    if(timerSeconds<=0){
+      clearInterval(timerInterval);
+      if(!answered){
+        answered=true;lives=Math.max(0,lives-1);combo=0;
+        disableOptions();sndFail();
+        const lv=sessionLevels[currentLevel];
+        showModal(false,'⏰','¡Tiempo agotado!',`Respuesta correcta: ${lv.options[lv.correct]}. ${lv.explanation}`,lv.remember,0,lives<=0);
+      }
+    }
+  },1000);
+}
+
+function updateTimerBar(){
+  const max=DIFF[currentWorldIdx].timer;
+  const pct=(timerSeconds/max)*100;
+  const bar=document.getElementById('timerBar');bar.style.width=pct+'%';bar.className='timer-bar';
+  if(pct<=25)bar.classList.add('danger');
+  else if(pct<=50)bar.classList.add('warning');
+}
+
+function selectOption(idx){
+  if(answered)return;answered=true;clearInterval(timerInterval);sndSelect();
+  const lv=sessionLevels[currentLevel], d=DIFF[currentWorldIdx];
+  const correct=idx===lv.correct;
+  document.querySelectorAll('.option-btn').forEach((b,i)=>{
+    b.disabled=true;
+    if(i===lv.correct)b.classList.add('correct');
+    else if(i===idx&&!correct)b.classList.add('wrong');
+  });
+  if(correct){
+    combo++;
+    const timePts=Math.max(5,Math.round(timerSeconds*d.mult));
+    const comboPts=combo>=3?Math.round(timePts*(1+combo*0.15)):0;
+    const pts=timePts+comboPts;
+    score+=pts; totalScore+=pts;
+    sndOk();launchConfetti();
+    showModal(true,'✅','¡Correcto!',lv.explanation,lv.remember,pts,false);
+  }else{
+    combo=0;lives=Math.max(0,lives-1);sndFail();
+    showModal(false,'❌','¡Incorrecto!',`Respuesta correcta: ${lv.options[lv.correct]}. ${lv.explanation}`,lv.remember,0,lives<=0);
+  }
+  updateHUD();updateCombo();
+}
+
+function disableOptions(){document.querySelectorAll('.option-btn').forEach(b=>b.disabled=true);}
+
+// ══════════════════════════════════════════════════════════
+//  MODAL
+// ══════════════════════════════════════════════════════════
+function showModal(correct,icon,title,explanation,remember,pts,gameOver){
+  document.getElementById('modalIcon').textContent=icon;
+  const tEl=document.getElementById('modalTitle');
+  tEl.textContent=gameOver?'¡Sin vidas!':title;
+  tEl.className='modal-title '+(correct?'correct':'wrong');
+  document.getElementById('modalPts').textContent=pts>0?`+${pts} puntos`:'';
+  document.getElementById('modalExplanation').textContent=explanation;
+  document.getElementById('modalRemember').textContent='📌 '+remember;
+  const btn=document.getElementById('modalBtn');
+  if(gameOver){btn.textContent='💀 Ver resultados';btn.className='modal-btn wrong-btn';btn._gameOver=true;}
+  else if(correct){btn.textContent='Siguiente →';btn.className='modal-btn correct-btn';btn._gameOver=false;}
+  else{btn.textContent='Continuar →';btn.className='modal-btn wrong-btn';btn._gameOver=false;}
+  document.getElementById('feedbackBox').className='modal-box';
+  document.getElementById('feedbackModal').classList.add('active');
+}
+function modalNext(){
+  document.getElementById('feedbackModal').classList.remove('active');
+  if(document.getElementById('modalBtn')._gameOver||lives<=0){showEnd();return;}
+  currentLevel++;loadLevel();
+}
+
+// ══════════════════════════════════════════════════════════
+//  FIN DE MUNDO + DESBLOQUEO
+// ══════════════════════════════════════════════════════════
+function showEnd(){
+  clearInterval(timerInterval);
+  const wi=currentWorldIdx, w=WORLDS[wi], d=DIFF[wi];
+  if(score>worldScores[wi])worldScores[wi]=score;
+
+  const maxPossible=sessionLevels.length*d.timer*d.mult;
+  const pct=Math.round((score/maxPossible)*100);
+
+  let trophy='🏆',title2='¡Mundo completado!',msg='';
+  if(pct>=80){trophy='🥇';msg=`Maestría absoluta en "${w.name}". ¡Eres un verdadero explorador de secuencias!`;}
+  else if(pct>=55){trophy='🥈';msg=`Muy buen trabajo en "${w.name}". Sigue practicando para alcanzar la maestría.`;}
+  else{trophy='📚';title2='Sigue aprendiendo';msg=`Revisa la lección de "${w.name}" y vuelve a intentarlo.`;}
+
+  document.getElementById('endTrophy').textContent=trophy;
+  document.getElementById('endTitle').textContent=title2;
+  document.getElementById('endWorldLabel').textContent=`${w.icon} ${w.name} · ${d.label}`;
+  document.getElementById('endScore').textContent=`${score} pts`;
+  document.getElementById('endMessage').textContent=msg;
+
+  // Comprobar desbloqueos
+  const unlockHint=document.getElementById('endUnlockHint');
+  let newUnlock=-1;
+  WORLDS.forEach((_,i)=>{
+    if(i>0&&!unlockedWorlds[i]&&totalScore>=DIFF[i].req){
+      unlockedWorlds[i]=true;newUnlock=i;
+    }
+  });
+
+  if(newUnlock>=0){
+    unlockHint.style.display='inline-block';
+    unlockHint.textContent=`🔓 ¡Desbloqueaste ${WORLDS[newUnlock].icon} ${WORLDS[newUnlock].name}!`;
+  }else if(wi<5&&!unlockedWorlds[wi+1]){
+    unlockHint.style.display='inline-block';
+    unlockHint.textContent=`🔒 Siguiente mundo: ${DIFF[wi+1].req} pts totales (tienes ${totalScore})`;
+  }else{
+    unlockHint.style.display='none';
+  }
+
+  updatePlayerUI();
+  showScreen('screen-end');
+  if(pct>=80)launchConfetti(true);
+  else if(pct>=55)launchConfetti(false);
+
+  // Mostrar modal de desbloqueo
+  if(newUnlock>=0){
+    setTimeout(()=>showUnlockModal(newUnlock),1200);
+  }
+}
+
+function showUnlockModal(idx){
+  sndUnlock();
+  document.getElementById('unlockIcon').textContent=WORLDS[idx].icon;
+  document.getElementById('unlockTitle').textContent=`¡${WORLDS[idx].name} desbloqueado!`;
+  document.getElementById('unlockDesc').textContent=`Has acumulado ${totalScore} puntos. ¡El mundo ${DIFF[idx].label} ya está disponible en el mapa!`;
+  document.getElementById('unlockModal').classList.add('active');
+  launchConfetti(true);
+}
+function closeUnlock(){
+  document.getElementById('unlockModal').classList.remove('active');
+  buildWorldsGrid();
+}
+
+function retryWorld(){goHome();setTimeout(()=>openLesson(currentWorldIdx),50);}
+
+// ══════════════════════════════════════════════════════════
+//  NAV
+// ══════════════════════════════════════════════════════════
+function showScreen(id){
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  window.scrollTo(0,0);
+}
+function goHome(){
+  clearInterval(timerInterval);
+  document.getElementById('feedbackModal').classList.remove('active');
+  document.getElementById('unlockModal').classList.remove('active');
+  buildWorldsGrid();
+  showScreen('screen-home');
+}
+
+document.getElementById('gameHomeBtn').addEventListener('click',()=>{
+  clearInterval(timerInterval);
+  document.getElementById('feedbackModal').classList.remove('active');
+  buildWorldsGrid();
+  showScreen('screen-home');
+});
+document.getElementById('soundBtn').addEventListener('click',()=>{
+  soundEnabled=!soundEnabled;
+  document.getElementById('soundBtn').textContent=soundEnabled?'🔊':'🔇';
+});
+
+// ══════════════════════════════════════════════════════════
+//  INIT
+// ══════════════════════════════════════════════════════════
+buildAmbient();
+</script>
+</body>
+<iframe id="JotFormIFrame-019dda696f8e70dd8c0cc114720bb704cf25"
+  title="María: Tutor de lengua castellana" allowtransparency="true"
+  allow="geolocation; microphone; camera; fullscreen"<iframe id="JotFormIFrame-019dda696f8e70dd8c0cc114720bb704cf25"
+  title="María: Tutor de lengua castellana" allowtransparency="true"
+  allow="geolocation; microphone; camera; fullscreen"
+  src="https://agent.jotform.com/019dda696f8e70dd8c0cc114720bb704cf25?embedMode=iframe&autofocus=0&background=1&shadow=1"
+  frameborder="0" style="
+    max-width:100%;
+    height:688px;
+    border:none;
+    
+    width:100%;
+  " scrolling="no">
+</iframe>
+<script src='https://cdn.jotfor.ms/s/umd/073ae96e3f0/for-form-embed-handler.js'></script>
+<script>
+  window.jotformEmbedHandler("iframe[id='JotFormIFrame-019dda696f8e70dd8c0cc114720bb704cf25']",
+    "https://www.jotform.com")
+</script>
+  src="https://agent.jotform.com/019dda696f8e70dd8c0cc114720bb704cf25?embedMode=iframe&autofocus=0&background=1&shadow=1"
+  frameborder="0" style="
+    max-width:100%;
+    height:688px;
+    border:none;
+    
+    width:100%;
+  " scrolling="no">
+</iframe>
+<script src='https://cdn.jotfor.ms/s/umd/073ae96e3f0/for-form-embed-handler.js'></script>
+<script>
+  window.jotformEmbedHandler("iframe[id='JotFormIFrame-019dda696f8e70dd8c0cc114720bb704cf25']",
+    "https://www.jotform.com")
+</script>
+</html>
